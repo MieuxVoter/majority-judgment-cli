@@ -1,0 +1,6 @@
+# Not 100% sure we should version this.
+go.sum
+
+# Builds
+majority-judgment-cli
+mj
