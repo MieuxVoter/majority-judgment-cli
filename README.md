@@ -27,14 +27,15 @@ Meanwhile, grab the source and build it:
 
 ## Usage
 
-    ./mj example.csv > results.json
+    mj example.csv
 
 or use `-` to read from `stdin`:
 
-    cat example.csv | ./mj - > results.json
+    cat example.csv | mj -
 
 You can specify the format:
 
+    ./mj example.csv --format json > results.json
     ./mj example.csv --format csv > results.csv
     ./mj example.csv --format svg > merit.svg
 
