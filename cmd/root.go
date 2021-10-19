@@ -67,13 +67,13 @@ Get different formats as output:
 			_ = cmd.Help()
 			return
 		}
-
+		var outputFormatter formatter.Formatter
 		format := cmd.Flags().Lookup("format").Value.String()
-		outputFormatter := &formatter.TextFormatter{}
+		outputFormatter = &formatter.TextFormatter{}
 		if "text" == format {
 			//outputFormatter = &formatter.TextFormatter{}
 		} else if "json" == format {
-			panic("todo")
+			outputFormatter = &formatter.JsonFormatter{}
 		} else if "csv" == format {
 			panic("todo")
 		} else if "svg" == format {
@@ -150,7 +150,7 @@ Get different formats as output:
 
 			if rowIndex > 0 || !hasGradesNamesRow {
 				if hasProposalNamesColumn {
-					proposals = append(proposals, row[0])
+					proposals = append(proposals, strings.TrimSpace(row[0]))
 				} else {
 					j := len(proposals)
 					proposals = append(proposals, "Proposal "+ABC[j:j+1])
@@ -159,7 +159,11 @@ Get different formats as output:
 				proposalsTallies = append(proposalsTallies, proposalTally)
 			}
 		}
-		fmt.Println("grades", grades)
+
+		for gradeIndex, grade := range grades {
+			grades[gradeIndex] = strings.TrimSpace(grade)
+		}
+		//fmt.Println("grades", grades)
 
 		poll := &judgment.PollTally{
 			Proposals: proposalsTallies,
@@ -181,7 +185,7 @@ Get different formats as output:
 			fmt.Println("Formatter Error:", err)
 			os.Exit(4)
 		}
-		fmt.Print(out)
+		fmt.Println(out)
 	},
 }
 
