@@ -40,3 +40,13 @@ Available charts:
     go build -o mj
 
 
+### Build distributables
+
+    go build -ldflags "-s -w" -o mj && upx mj
+
+Yields a `mj` binary of about `2 Mio`.
+
+
+#### For Windows
+
+    GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o mj.exe
