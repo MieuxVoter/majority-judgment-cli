@@ -31,13 +31,25 @@ func (t *TextFormatter) Format(
 	}
 	amountOfDigitsForRank := countDigits(biggestRank)
 
+	amountOfCharactersForProposal := 1
+	maximumAmountOfCharactersForProposal := 30
+	for _, proposal := range proposals {
+		pl := len(proposal)
+		if pl > amountOfCharactersForProposal {
+			amountOfCharactersForProposal = pl
+		}
+	}
+	if amountOfCharactersForProposal > maximumAmountOfCharactersForProposal {
+		amountOfCharactersForProposal = maximumAmountOfCharactersForProposal
+	}
+
 	for _, proposalResult := range proposalsResults {
 		//fmt.Println("Rank", proposalResult.Rank, proposalsTallies[resultIndex].Tally)
 		out += fmt.Sprintf(
 			"Rank %0"+strconv.Itoa(amountOfDigitsForRank)+"d :",
 			proposalResult.Rank,
 		)
-		out += fmt.Sprintf(" %s", proposals[proposalResult.Index])
+		out += fmt.Sprintf(" % *s", amountOfCharactersForProposal, proposals[proposalResult.Index])
 
 		out += "\n"
 	}
