@@ -8,7 +8,7 @@ import (
 type JsonFormatter struct{}
 
 func (t *JsonFormatter) Format(
-	pollTally *judgment.PollTally,
+	tally *judgment.PollTally,
 	result *judgment.PollResult,
 	proposals []string,
 	grades []string,
@@ -22,7 +22,7 @@ func (t *JsonFormatter) Format(
 	}{
 		Proposals: proposals,
 		Grades:    grades,
-		Tally:     pollTally,
+		Tally:     tally,
 		Result:    result,
 	})
 
