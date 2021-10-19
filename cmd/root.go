@@ -19,23 +19,21 @@ package cmd
 import (
 	"encoding/csv"
 	"fmt"
+	"github.com/MieuxVoter/majority-judgment-cli/formatter"
 	"github.com/spf13/cobra"
 	"strings"
 
-	//"log"
 	"os"
 	"strconv"
-	//"unicode"
 
 	"github.com/mieuxvoter/majority-judgment-library-go/judgment"
 	"github.com/spf13/viper"
-	//gointtoletters "github.com/arturwwl/gointtoletters"
 )
 
 var cfgFile string
 
 var rootCmd = &cobra.Command{
-	Use:   "majority-judgment-cli",
+	Use:   "mj FILE",
 	Short: "Resolve Majority Judgment polls",
 	Long: `Resolve majority judgment polls from an input CSV.
 
@@ -61,16 +59,26 @@ Get different formats as output:
 	mj example.csv --format csv
 
 `,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		//_, _ = fmt.Fprintln(os.Stdout, "Reading input CSV file…")
+		const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-		for i, s := range args {
-			fmt.Println(i, s)
+		if len(args) != 1 {
+			// Our FILE positional argument is mandatory
+			_ = cmd.Help()
+			return
 		}
 
-		//fmt.Println("format:", cmd.Flags().Lookup("format").Value)
+		format := cmd.Flags().Lookup("format").Value.String()
+		outputFormatter := &formatter.TextFormatter{}
+		if "text" == format {
+			//outputFormatter = &formatter.TextFormatter{}
+		} else if "json" == format {
+			panic("todo")
+		} else if "csv" == format {
+			panic("todo")
+		} else if "svg" == format {
+			panic("todo")
+		}
 
 		proposalsTallies := make([]*judgment.ProposalTally, 0, 10)
 
@@ -78,43 +86,78 @@ Get different formats as output:
 		if err != nil {
 			fmt.Println(err)
 		}
-		//fmt.Println("Successfully Opened CSV file")
 		defer csvFile.Close()
 
 		csvRows, err := csv.NewReader(csvFile).ReadAll()
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Failed to read input CSV:", err)
+			os.Exit(2)
 		}
-		grades := []string{}
-		headerLooksLikeTally := true
-		for rowIndex, row := range csvRows {
 
-			if len(row) < 2 {
+		grades := []string{}
+		proposals := []string{}
+		//headerLooksLikeTally := true
+		hasGradesNamesRow := false
+		hasProposalNamesColumn := false
+		for rowIndex, row := range csvRows {
+			if rowIndex == 0 {
+				rowLen := len(row)
+				for i := 1; i < rowLen; i++ {
+					if "" == strings.TrimSpace(row[i]) {
+						continue
+					}
+					_, err := ReadNumber(row[i])
+					if err != nil {
+						hasGradesNamesRow = true
+						break
+					}
+				}
+			}
+
+			if !hasGradesNamesRow || 0 != rowIndex {
+				if "" == strings.TrimSpace(row[0]) {
+					continue
+				}
+				_, err := ReadNumber(row[0])
+				if err != nil {
+					hasProposalNamesColumn = true
+				}
+			}
+
+		}
+
+		for rowIndex, row := range csvRows {
+			rowLen := len(row)
+			if rowLen < 2 {
 				continue
 			}
 
 			if rowIndex == 0 {
-				grades = row[1:]
-				for i := 0; i < len(grades); i++ {
-					_, err := ReadNumber(grades[i])
-					if err != nil {
-						headerLooksLikeTally = false
-						break
+				if hasGradesNamesRow {
+					if hasProposalNamesColumn {
+						grades = row[1:]
+					} else {
+						grades = row[:]
+					}
+				} else {
+					if hasProposalNamesColumn {
+						grades = []string{ABC[0 : rowLen-1]}
+					} else {
+						grades = []string{ABC[0:rowLen]}
 					}
 				}
-				if headerLooksLikeTally {
-					//fmt.Println("Header suspiciously looks like a tally.")
-					const abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-					grades = []string{abc[0:len(grades)]}
-				}
 			}
 
-			if rowIndex > 0 || headerLooksLikeTally {
-				proposalTally := &judgment.ProposalTally{Tally: ReadRow(row)}
+			if rowIndex > 0 || !hasGradesNamesRow {
+				if hasProposalNamesColumn {
+					proposals = append(proposals, row[0])
+				} else {
+					j := len(proposals)
+					proposals = append(proposals, "Proposal "+ABC[j:j+1])
+				}
+				proposalTally := &judgment.ProposalTally{Tally: ReadRow(row, hasProposalNamesColumn)}
 				proposalsTallies = append(proposalsTallies, proposalTally)
 			}
-
-			//fmt.Println(row)
 		}
 		fmt.Println("grades", grades)
 
@@ -124,26 +167,34 @@ Get different formats as output:
 		deliberator := &judgment.MajorityJudgment{}
 		result, err := deliberator.Deliberate(poll)
 		if err != nil {
-			fmt.Println("Error", err)
+			fmt.Println("Deliberation Error:", err)
 			os.Exit(3)
 		}
-		fmt.Println("result", result)
-		for resultIndex, proposalResult := range result.Proposals {
-			fmt.Println("Rank", proposalResult.Rank, proposalsTallies[resultIndex].Tally)
+
+		out, formatterErr := outputFormatter.Format(
+			poll,
+			result,
+			proposals,
+			grades,
+		)
+		if formatterErr != nil {
+			fmt.Println("Formatter Error:", err)
+			os.Exit(4)
 		}
+		fmt.Print(out)
 	},
 }
 
 // ReadRow reads a proposal tally row from strings
-func ReadRow(row []string) (tallies []uint64) {
+func ReadRow(row []string, skipFirst bool) (tallies []uint64) {
 	tallies = make([]uint64, 0, 10)
 	for colIndex, gradeTally := range row {
-		if colIndex == 0 {
-			continue // skip proposals column — todo: make it smarter
+		if skipFirst && colIndex == 0 {
+			continue
 		}
 		n, err := ReadNumber(gradeTally)
 		if err != nil {
-			fmt.Println("Err with ReadRow", err)
+			//fmt.Println("Err with ReadRow", err)
 			n = 0 // or propagate, perhaps
 		}
 		tallies = append(tallies, uint64(n))
@@ -172,7 +223,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.majority-judgment-cli.yaml)")
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
-	rootCmd.Flags().StringP("format", "f", "json", "desired format of the output")
+	rootCmd.Flags().StringP("format", "f", "text", "desired format of the output")
 	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
 
