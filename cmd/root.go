@@ -39,10 +39,10 @@ var rootCmd = &cobra.Command{
 
 Say you have the following tally in a CSV file named example.csv:
 
-	, reject, poor, fair, good, very good, excellent
-	Candidate A, 4, 2, 3, 4, 5, 2
-	Candidate B, 4, 2, 3, 4, 5, 2
-	Candidate C, 4, 2, 3, 4, 5, 2
+	     , reject, poor, fair, good, very good, excellent
+	Pizza,      3,    2,    1,    4,         4,        2
+	Chips,      2,    3,    0,    4,         3,        4
+	Pasta,      4,    5,    1,    4,         0,        2
 
 You could run:
 
