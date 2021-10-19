@@ -70,9 +70,7 @@ Get different formats as output:
 		var outputFormatter formatter.Formatter
 		format := cmd.Flags().Lookup("format").Value.String()
 		outputFormatter = &formatter.TextFormatter{}
-		if "text" == format {
-			//outputFormatter = &formatter.TextFormatter{}
-		} else if "json" == format {
+		if "json" == format {
 			outputFormatter = &formatter.JsonFormatter{}
 		} else if "csv" == format {
 			panic("todo")
@@ -96,7 +94,6 @@ Get different formats as output:
 
 		grades := []string{}
 		proposals := []string{}
-		//headerLooksLikeTally := true
 		hasGradesNamesRow := false
 		hasProposalNamesColumn := false
 		for rowIndex, row := range csvRows {
@@ -163,7 +160,6 @@ Get different formats as output:
 		for gradeIndex, grade := range grades {
 			grades[gradeIndex] = strings.TrimSpace(grade)
 		}
-		//fmt.Println("grades", grades)
 
 		poll := &judgment.PollTally{
 			Proposals: proposalsTallies,
@@ -175,11 +171,16 @@ Get different formats as output:
 			os.Exit(3)
 		}
 
+		options := &formatter.Options{
+			Sorted: bool(cmd.Flags().Lookup("sort").Changed),
+		}
+
 		out, formatterErr := outputFormatter.Format(
 			poll,
 			result,
 			proposals,
 			grades,
+			options,
 		)
 		if formatterErr != nil {
 			fmt.Println("Formatter Error:", err)
@@ -233,7 +234,7 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.Flags().BoolP("sort", "s", false, "Sort proposals by Rank")
 }
 
 // initConfig reads in config file and ENV variables if set.

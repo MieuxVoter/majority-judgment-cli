@@ -3,8 +3,7 @@ module github.com/MieuxVoter/majority-judgment-cli
 go 1.17
 
 require (
-	github.com/mieuxvoter/majority-judgment-library-go v0.2.0
-	github.com/arturwwl/gointtoletters v0.0.1
+	github.com/mieuxvoter/majority-judgment-library-go v0.2.2
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 )

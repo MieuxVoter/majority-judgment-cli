@@ -12,7 +12,10 @@ func (t *JsonFormatter) Format(
 	result *judgment.PollResult,
 	proposals []string,
 	grades []string,
+	options *Options,
 ) (string, error) {
+
+	// JSON can ignore options.Sorted because it always sends back everything
 
 	jsonBytes, jsonErr := json.Marshal(struct {
 		Proposals []string             `json:"proposals"`
@@ -30,7 +33,5 @@ func (t *JsonFormatter) Format(
 		return "", jsonErr
 	}
 
-	out := string(jsonBytes)
-
-	return out, nil
+	return string(jsonBytes), nil
 }
