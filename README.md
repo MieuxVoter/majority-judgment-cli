@@ -35,13 +35,13 @@ or use `-` to read from `stdin`:
 
 You can specify the format:
 
-    ./mj example.csv --format json > results.json
-    ./mj example.csv --format csv > results.csv
-    ./mj example.csv --format svg > merit.svg
+    mj example.csv --format json > results.json
+    mj example.csv --format csv > results.csv
+    mj example.csv --format svg > merit.svg
 
 And the kind of chart you want:
 
-    ./mj example.csv --format svg --chart opinion > opinion.svg
+    mj example.csv --format svg --chart opinion > opinion.svg
 
 Available charts:
 - `merit_linear` (default)
