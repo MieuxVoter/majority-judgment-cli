@@ -34,7 +34,7 @@ var cfgFile string
 
 var rootCmd = &cobra.Command{
 	Use:   "mj FILE",
-	Short: "Resolve Majority Judgment polls",
+	Short: "Rank Majority Judgment polls",
 	Long: `Resolve majority judgment polls from an input CSV.
 
 Say you have the following tally in a CSV file named example.csv:
@@ -57,6 +57,10 @@ Get different formats as output:
 	mj example.csv --format json
 	mj example.csv --format svg
 	mj example.csv --format csv
+
+Only positive integers are supported in tallies.
+If you used normalization and have real, floating-point values,
+multiply them beforehand by a big factor like 1 000 000 000.
 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
