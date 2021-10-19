@@ -1,8 +1,19 @@
 # Majority Judgment CLI tool
 
 > **WORK IN PROGRESS**
-> The features described in this README are not yet implemented.
+> Although the core mechanics are here and ranking does work,
+> the features described in this README are not all implemented.
 > We're merely doc-driving this tool.
+
+- [ ] Read from stdin with `-`
+- [x] Read `CSV` file
+- [x] `--sort`
+- [x] `--format text`
+- [x] `--format json`
+- [ ] `--format csv`
+- [ ] `--format yml`
+- [ ] `--format svg`
+- [ ] `--chart`
 
 
 ## Download
@@ -10,6 +21,9 @@
 > From CI artifacts?
 > Perhaps we'll handcraft a few releases
 
+Meanwhile, grab the source and build it:
+
+    git clone https://github.com/MieuxVoter/majority-judgment-cli
 
 ## Usage
 
@@ -36,6 +50,12 @@ Available charts:
 
 ## Build
 
+Install [golang](https://golang.org/doc/install).
+
+Example for Ubuntu: `sudo snap install go --classic`
+
+Then go into this project directory and run:
+
     go get
     go build -o mj
 
@@ -45,6 +65,8 @@ Available charts:
     go build -ldflags "-s -w" -o mj && upx mj
 
 Yields a `mj` binary of about `2 Mio`.
+
+> They say we should not `strip` go builds.
 
 
 #### For Windows
