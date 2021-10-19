@@ -175,8 +175,13 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			os.Exit(3)
 		}
 
+		desiredWidth, widthErr := strconv.Atoi(cmd.Flags().Lookup("width").Value.String())
+		if widthErr != nil || desiredWidth < 0 {
+			desiredWidth = 79
+		}
 		options := &formatter.Options{
 			Sorted: bool(cmd.Flags().Lookup("sort").Changed),
+			Width:  desiredWidth,
 		}
 
 		out, formatterErr := outputFormatter.Format(
@@ -233,6 +238,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.majority-judgment-cli.yaml)")
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 	rootCmd.Flags().StringP("format", "f", "text", "desired format of the output")
+	rootCmd.Flags().StringP("width", "w", "79", "desired width, in characters")
 	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
 

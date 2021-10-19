@@ -4,6 +4,7 @@ import "github.com/mieuxvoter/majority-judgment-library-go/judgment"
 
 type Options struct {
 	Sorted bool
+	Width  int
 }
 
 type Formatter interface {
