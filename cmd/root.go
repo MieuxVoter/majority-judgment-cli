@@ -17,10 +17,12 @@ limitations under the License.
 package cmd
 
 import (
+	"bufio"
 	"encoding/csv"
 	"fmt"
 	"github.com/MieuxVoter/majority-judgment-cli/formatter"
 	"github.com/spf13/cobra"
+	"io"
 	"strings"
 
 	"os"
@@ -89,13 +91,24 @@ multiply them beforehand by a big factor like 1 000 000 000.
 
 		proposalsTallies := make([]*judgment.ProposalTally, 0, 10)
 
-		csvFile, err := os.Open(args[0])
-		if err != nil {
-			fmt.Println(err)
+		fileParameter := strings.TrimSpace(args[0])
+		var csvReader io.Reader
+		if "-" == fileParameter {
+			csvReader = bufio.NewReader(os.Stdin)
+		} else {
+			csvFile, err := os.Open(fileParameter)
+			if err != nil {
+				fmt.Println(err)
+			}
+			defer func(csvFile *os.File) {
+				err := csvFile.Close()
+				if err != nil {
+					fmt.Println(err)
+				}
+			}(csvFile)
+			csvReader = csvFile
 		}
-		defer csvFile.Close()
-
-		csvRows, err := csv.NewReader(csvFile).ReadAll()
+		csvRows, err := csv.NewReader(csvReader).ReadAll()
 		if err != nil {
 			fmt.Println("Failed to read input CSV:", err)
 			os.Exit(2)

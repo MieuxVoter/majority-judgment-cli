@@ -5,7 +5,7 @@
 > the features described in this README are not all implemented.
 > We're merely doc-driving this tool, and our doc is ambitious.
 
-- [ ] Read from stdin with `-`
+- [x] Read from stdin with `-`
 - [x] Read `CSV` file
 - [x] `--sort`
 - [x] `--format text`
