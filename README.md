@@ -1,5 +1,13 @@
 # Majority Judgment CLI tool
 
+[![MIT](https://img.shields.io/github/license/MieuxVoter/majority-judgment-cli?style=for-the-badge)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/MieuxVoter/majority-judgment-cli?include_prereleases&style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-cli/releases)
+[![Build Status](https://img.shields.io/github/workflow/status/MieuxVoter/majority-judgment-cli/Go?style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-cli/actions/workflows/go.yml)
+[![Code Quality](https://img.shields.io/codefactor/grade/github/MieuxVoter/majority-judgment-cli?style=for-the-badge)](https://www.codefactor.io/repository/github/mieuxvoter/majority-judgment-cli)
+[![A+](https://img.shields.io/badge/go%20report-A+-brightgreen.svg?style=for-the-badge)](https://goreportcard.com/report/github.com/mieuxvoter/majority-judgment-cli)
+![LoC](https://img.shields.io/tokei/lines/github/MieuxVoter/majority-judgment-cli?style=for-the-badge)
+[![Discord Chat](https://img.shields.io/discord/705322981102190593.svg?style=for-the-badge)](https://discord.gg/rAAQG9S)
+
 > **WORK IN PROGRESS**
 > Although the core mechanics are here and ranking does work,
 > the features described in this README are not all implemented.

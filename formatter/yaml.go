@@ -15,7 +15,7 @@ func (t *YamlFormatter) Format(
 	options *Options,
 ) (string, error) {
 
-	// JSON can ignore options.Sorted because it always sends back everything
+	// Can ignore options.Sorted because it always sends back everything
 
 	jsonBytes, jsonErr := yaml.Marshal(struct {
 		Proposals []string             `json:"proposals"`

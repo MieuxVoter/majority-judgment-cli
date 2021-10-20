@@ -8,8 +8,13 @@ import (
 	"strings"
 )
 
+// TextFormatter is the default formatter.
+// It displays the proposals with their merit profiles and ranks.
+// It does not use color (yet).  ANSI colors are appalling.
+// Perhaps we can use xterm colors?
 type TextFormatter struct{}
 
+// Format the provided results
 func (t *TextFormatter) Format(
 	pollTally *judgment.PollTally,
 	result *judgment.PollResult,
@@ -50,8 +55,7 @@ func (t *TextFormatter) Format(
 	}
 
 	for _, proposalResult := range proposalsResults {
-		line := ""
-		line += fmt.Sprintf(
+		line := fmt.Sprintf(
 			"#%0"+strconv.Itoa(amountOfDigitsForRank)+"d  ",
 			proposalResult.Rank,
 		)

@@ -8,8 +8,10 @@ import (
 	"strconv"
 )
 
+// CsvFormatter formats the results as CSV, with , as delimiter and " as quote
 type CsvFormatter struct{}
 
+// Format the provided results
 func (t *CsvFormatter) Format(
 	pollTally *judgment.PollTally,
 	result *judgment.PollResult,

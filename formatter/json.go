@@ -5,8 +5,11 @@ import (
 	"github.com/mieuxvoter/majority-judgment-library-go/judgment"
 )
 
+// JsonFormatter formats the output as … JSON
+// All on one line, feel free to make an option if you can figure out how to beautify it
 type JsonFormatter struct{}
 
+// Format the provided results
 func (t *JsonFormatter) Format(
 	tally *judgment.PollTally,
 	result *judgment.PollResult,
