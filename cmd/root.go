@@ -21,6 +21,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"github.com/MieuxVoter/majority-judgment-cli/formatter"
+	"github.com/MieuxVoter/majority-judgment-cli/version"
 	"github.com/spf13/cobra"
 	"io"
 	"strings"
@@ -36,7 +37,7 @@ var cfgFile string
 
 var rootCmd = &cobra.Command{
 	Use:     "mj FILE",
-	Version: "0.2.0",
+	Version: version.GitSummary,
 	Short:   "Rank Majority Judgment polls",
 	Long: `Resolve majority judgment polls from an input CSV.
 
