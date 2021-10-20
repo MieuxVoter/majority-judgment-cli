@@ -71,6 +71,15 @@ func (t *TextFormatter) Format(
 		out += line + "\n"
 	}
 
+	out += "\nLegend:  "
+	for gradeIndex, gradeName := range grades {
+		if 0 < gradeIndex {
+			out += "  "
+		}
+		out += fmt.Sprintf("%d=%s", gradeIndex, gradeName)
+	}
+	out += "\n"
+
 	return strings.TrimSpace(out), nil
 }
 
