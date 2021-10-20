@@ -1,6 +1,6 @@
 #!/bin/bash
 
-go get github.com/ahmetb/govvv
+#go get github.com/ahmetb/govvv
 
 go build \
   -ldflags="$(govvv -flags -pkg $(go list ./version)) -s -w" \
