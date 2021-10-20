@@ -164,9 +164,9 @@ multiply them beforehand by a big factor like 1 000 000 000.
 					}
 				} else {
 					if hasProposalNamesColumn {
-						grades = []string{ABC[0 : rowLen-1]}
+						grades = strings.Split(ABC[0:rowLen-1], "")
 					} else {
-						grades = []string{ABC[0:rowLen]}
+						grades = strings.Split(ABC[0:rowLen], "")
 					}
 				}
 			}
