@@ -30,8 +30,11 @@ func (t *CsvFormatter) Format(
 	}
 
 	headersWriteErr := writer.Write([]string{
-		"rank",
-		"proposal",
+		"Rank",
+		"Proposal",
+		"Score",
+		"MajorityGrade",
+		"SecondMajorityGrade",
 	})
 
 	if nil != headersWriteErr {
@@ -43,6 +46,9 @@ func (t *CsvFormatter) Format(
 		writeErr := writer.Write([]string{
 			strconv.Itoa(proposalResult.Rank),
 			proposals[proposalResult.Index],
+			proposalResult.Score,
+			grades[proposalResult.Analysis.MedianGrade],
+			grades[proposalResult.Analysis.SecondMedianGrade],
 		})
 		if nil != writeErr {
 			log.Fatal(writeErr)
