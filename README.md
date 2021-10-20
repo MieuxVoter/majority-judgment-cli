@@ -56,6 +56,18 @@ or use `-` to read from `stdin`:
 
     cat example.csv | mj -
 
+### Balancing
+
+If your tally is not balanced, you may use a default judgment strategy:
+
+    mj example.csv --default-to 0
+    mj example.csv --default-to excellent
+    mj example.csv --default-to "très bien" --judges 42
+    mj example.csv --default-to-majority
+    mj example.csv --normalize
+
+### Formats
+
 You can specify the format:
 
     ./mj example.csv --format json > results.json
