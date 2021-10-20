@@ -80,6 +80,9 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			panic("todo")
 		} else if "svg" == format {
 			panic("todo")
+		} else {
+			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json\n", format)
+			os.Exit(3)
 		}
 
 		proposalsTallies := make([]*judgment.ProposalTally, 0, 10)
@@ -96,8 +99,8 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			os.Exit(2)
 		}
 
-		grades := []string{}
-		proposals := []string{}
+		var grades []string
+		var proposals []string
 		hasGradesNamesRow := false
 		hasProposalNamesColumn := false
 		for rowIndex, row := range csvRows {
