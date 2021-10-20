@@ -71,7 +71,7 @@ func (t *TextFormatter) Format(
 		out += line + "\n"
 	}
 
-	out += "\nLegend:  "
+	out += "\n   Legend:  "
 	for gradeIndex, gradeName := range grades {
 		if 0 < gradeIndex {
 			out += "  "
