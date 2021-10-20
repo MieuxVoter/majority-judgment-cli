@@ -11,7 +11,7 @@
 - [x] `--format text`
 - [x] `--format json`
 - [x] `--format csv`
-- [ ] `--format yml`
+- [x] `--format yml`
 - [ ] `--format svg`
 - [ ] `--chart`
 
@@ -52,6 +52,7 @@ You can specify the format:
 
     ./mj example.csv --format json > results.json
     ./mj example.csv --format csv > results.csv
+    ./mj example.csv --format yml > results.yml
     ./mj example.csv --format svg > merit.svg
 
 And the kind of chart you want:
@@ -89,6 +90,11 @@ Then go into this project directory and run:
 
 
 ### Build distributables
+
+We have a convenience script `build.sh` that will handle version embedding from git,
+using the clever `govvv`.
+
+But basically, it's:
 
     go build -ldflags "-s -w" -o mj
 

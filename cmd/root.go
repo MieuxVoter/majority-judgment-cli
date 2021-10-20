@@ -84,10 +84,12 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			outputFormatter = &formatter.JsonFormatter{}
 		} else if "csv" == format {
 			outputFormatter = &formatter.CsvFormatter{}
+		} else if "yml" == format || "yaml" == format {
+			outputFormatter = &formatter.YamlFormatter{}
 		} else if "svg" == format {
 			panic("todo")
 		} else {
-			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json\n", format)
+			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json, yaml\n", format)
 			os.Exit(3)
 		}
 

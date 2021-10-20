@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Install govvv first
 #go get github.com/ahmetb/govvv
 
 go build \
