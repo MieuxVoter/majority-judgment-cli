@@ -5,8 +5,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// YamlFormatter formats the results in YAML
 type YamlFormatter struct{}
 
+// Format the provided results
 func (t *YamlFormatter) Format(
 	tally *judgment.PollTally,
 	result *judgment.PollResult,
@@ -17,7 +19,7 @@ func (t *YamlFormatter) Format(
 
 	// Can ignore options.Sorted because it always sends back everything
 
-	jsonBytes, jsonErr := yaml.Marshal(struct {
+	yamlBytes, yamlErr := yaml.Marshal(struct {
 		Proposals []string             `json:"proposals"`
 		Grades    []string             `json:"grades"`
 		Tally     *judgment.PollTally  `json:"tally"`
@@ -29,9 +31,9 @@ func (t *YamlFormatter) Format(
 		Result:    result,
 	})
 
-	if jsonErr != nil {
-		return "", jsonErr
+	if yamlErr != nil {
+		return "", yamlErr
 	}
 
-	return string(jsonBytes), nil
+	return string(yamlBytes), nil
 }
