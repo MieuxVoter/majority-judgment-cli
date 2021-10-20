@@ -35,8 +35,9 @@ import (
 var cfgFile string
 
 var rootCmd = &cobra.Command{
-	Use:   "mj FILE",
-	Short: "Rank Majority Judgment polls",
+	Use:     "mj FILE",
+	Version: "0.2.0",
+	Short:   "Rank Majority Judgment polls",
 	Long: `Resolve majority judgment polls from an input CSV.
 
 Say you have the following tally in a CSV file named example.csv:
@@ -262,7 +263,7 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("sort", "s", false, "Sort proposals by Rank")
+	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by Rank")
 }
 
 // initConfig reads in config file and ENV variables if set.
