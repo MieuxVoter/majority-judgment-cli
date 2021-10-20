@@ -74,10 +74,12 @@ multiply them beforehand by a big factor like 1 000 000 000.
 		var outputFormatter formatter.Formatter
 		format := cmd.Flags().Lookup("format").Value.String()
 		outputFormatter = &formatter.TextFormatter{}
-		if "json" == format {
+		if "text" == format {
+			//outputFormatter = &formatter.TextFormatter{}
+		} else if "json" == format {
 			outputFormatter = &formatter.JsonFormatter{}
 		} else if "csv" == format {
-			panic("todo")
+			outputFormatter = &formatter.CsvFormatter{}
 		} else if "svg" == format {
 			panic("todo")
 		} else {

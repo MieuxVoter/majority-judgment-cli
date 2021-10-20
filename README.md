@@ -3,14 +3,14 @@
 > **WORK IN PROGRESS**
 > Although the core mechanics are here and ranking does work,
 > the features described in this README are not all implemented.
-> We're merely doc-driving this tool.
+> We're merely doc-driving this tool, and our doc is ambitious.
 
 - [ ] Read from stdin with `-`
 - [x] Read `CSV` file
 - [x] `--sort`
 - [x] `--format text`
 - [x] `--format json`
-- [ ] `--format csv`
+- [x] `--format csv`
 - [ ] `--format yml`
 - [ ] `--format svg`
 - [ ] `--chart`
@@ -63,13 +63,20 @@ Then go into this project directory and run:
 
 ### Build distributables
 
-    go build -ldflags "-s -w" -o mj && upx mj
+    go build -ldflags "-s -w" -o mj
 
-Yields a `mj` binary of about `2 Mio`.
+Yields a `mj` binary of about `5 Mio`.
 
 > They say we should not `strip` go builds.
+
+You can run `upx` on the binary to reduce its size:
+
+    upx mj
 
 
 #### For Windows
 
     GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o mj.exe
+
+Packing the Windows executable with `upx` appears to trigger antivirus software.
+
