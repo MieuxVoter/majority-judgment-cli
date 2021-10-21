@@ -278,7 +278,7 @@ func init() {
 	rootCmd.Flags().StringP("chart", "c", "merit", "One of merit, opinion")
 	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
-
+	rootCmd.SetVersionTemplate("{{.Version}}\n" + version.BuildDate + "\n")
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by Rank")
