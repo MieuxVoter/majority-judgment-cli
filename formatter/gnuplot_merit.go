@@ -98,7 +98,7 @@ set style fill solid 1.0
 
 set arrow \
     from 50,-0.5 \
-    to 50,2.5 \
+    to 50,` + strconv.Itoa(len(proposals)) + `.0 \
     nohead \
     dt 2 \
     front
