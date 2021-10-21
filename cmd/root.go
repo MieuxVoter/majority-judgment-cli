@@ -86,6 +86,8 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			outputFormatter = &formatter.CsvFormatter{}
 		} else if "yml" == format || "yaml" == format {
 			outputFormatter = &formatter.YamlFormatter{}
+		} else if "gnuplot-merit" == format || "gnuplot_merit" == format {
+			outputFormatter = &formatter.GnuplotMeritFormatter{}
 		} else if "gnuplot-opinion" == format || "gnuplot_opinion" == format {
 			outputFormatter = &formatter.GnuplotOpinionFormatter{}
 		} else if "svg" == format {
