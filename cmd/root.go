@@ -35,6 +35,12 @@ import (
 
 var cfgFile string
 
+const ErrorConfiguring = 1
+const ErrorReading = 2
+const ErrorBalancing = 3
+const ErrorDeliberating = 4
+const ErrorFormatting = 5
+
 var rootCmd = &cobra.Command{
 	Use:     "mj FILE",
 	Version: version.GitSummary,
@@ -59,8 +65,15 @@ or
 Get different formats as output:
 
 	mj example.csv --format json
-	mj example.csv --format svg
+	mj example.csv --format yml
 	mj example.csv --format csv
+	mj example.csv --format svg (todo)
+	mj example.csv --format gnuplot
+	mj example.csv --format gnuplot --chart opinion
+
+Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
+
+	mj example.csv --sort --format gnuplot | gnuplot
 
 Only positive integers are supported in tallies.
 If you used normalization and have real, floating-point values,
@@ -94,7 +107,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 				outputFormatter = &formatter.GnuplotOpinionFormatter{}
 			} else {
 				fmt.Printf("Chart `%s` is not supported.  Supported charts: merit, opinion\n", chart)
-				os.Exit(3)
+				os.Exit(ErrorConfiguring)
 			}
 		} else if "gnuplot-merit" == format || "gnuplot_merit" == format {
 			outputFormatter = &formatter.GnuplotMeritFormatter{}
@@ -104,7 +117,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			panic("todo")
 		} else {
 			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json, yaml\n", format)
-			os.Exit(3)
+			os.Exit(ErrorConfiguring)
 		}
 
 		proposalsTallies := make([]*judgment.ProposalTally, 0, 10)
@@ -129,7 +142,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 		csvRows, err := csv.NewReader(csvReader).ReadAll()
 		if err != nil {
 			fmt.Println("Failed to read input CSV:", err)
-			os.Exit(2)
+			os.Exit(ErrorReading)
 		}
 
 		var grades []string
@@ -204,11 +217,17 @@ multiply them beforehand by a big factor like 1 000 000 000.
 		poll := &judgment.PollTally{
 			Proposals: proposalsTallies,
 		}
+		poll.GuessAmountOfJudges()
+		balancerErr := poll.BalanceWithStaticDefault(0)
+		if balancerErr != nil {
+			fmt.Println("Balancing Error:", balancerErr)
+			os.Exit(ErrorBalancing)
+		}
 		deliberator := &judgment.MajorityJudgment{}
 		result, err := deliberator.Deliberate(poll)
 		if err != nil {
 			fmt.Println("Deliberation Error:", err)
-			os.Exit(3)
+			os.Exit(ErrorDeliberating)
 		}
 
 		desiredWidth, widthErr := strconv.Atoi(cmd.Flags().Lookup("width").Value.String())
@@ -229,7 +248,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 		)
 		if formatterErr != nil {
 			fmt.Println("Formatter Error:", err)
-			os.Exit(4)
+			os.Exit(ErrorFormatting)
 		}
 		fmt.Println(out)
 	},
