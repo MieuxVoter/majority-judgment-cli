@@ -93,7 +93,7 @@ You can specify the kind of chart you want:
 Available charts:
 - [x] `merit` (default)
 - [x] `opinion`
-- [ ] `radial` _(good first issue)_
+- [ ] `radial`? _(good first issue)_
 
 
 ## Install
