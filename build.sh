@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Install govvv first
+# Install things first
+#apt install upx
 #go get github.com/ahmetb/govvv
 
 go build \
