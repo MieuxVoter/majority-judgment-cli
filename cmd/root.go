@@ -86,6 +86,16 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			outputFormatter = &formatter.CsvFormatter{}
 		} else if "yml" == format || "yaml" == format {
 			outputFormatter = &formatter.YamlFormatter{}
+		} else if "gnuplot" == format || "plot" == format {
+			chart := cmd.Flags().Lookup("chart").Value.String()
+			if "merit" == chart {
+				outputFormatter = &formatter.GnuplotMeritFormatter{}
+			} else if "opinion" == chart {
+				outputFormatter = &formatter.GnuplotOpinionFormatter{}
+			} else {
+				fmt.Printf("Chart `%s` is not supported.  Supported charts: merit, opinion\n", chart)
+				os.Exit(3)
+			}
 		} else if "gnuplot-merit" == format || "gnuplot_merit" == format {
 			outputFormatter = &formatter.GnuplotMeritFormatter{}
 		} else if "gnuplot-opinion" == format || "gnuplot_opinion" == format {
@@ -265,6 +275,7 @@ func init() {
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 	rootCmd.Flags().StringP("format", "f", "text", "desired format of the output")
 	rootCmd.Flags().StringP("width", "w", "79", "desired width, in characters")
+	rootCmd.Flags().StringP("chart", "c", "merit", "One of merit, opinion")
 	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
 

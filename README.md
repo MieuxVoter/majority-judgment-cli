@@ -20,9 +20,9 @@
 - [x] `--format json`
 - [x] `--format csv`
 - [x] `--format yml`
-- [ ] `--format gnuplot`
+- [x] `--format gnuplot`
 - [ ] `--format svg`
-- [ ] `--chart`
+- [x] `--chart`
 
 
 ## Download
@@ -80,14 +80,20 @@ You can specify the format:
     ./mj example.csv --format yml > results.yml
     ./mj example.csv --format svg > merit.svg
 
-And the kind of chart you want:
+And even format [gnuplot](http://www.gnuplot.info/) scripts that render charts:
 
-    ./mj example.csv --format svg --chart opinion > opinion.svg
+    ./mj example.csv --format gnuplot | gnuplot
+
+![Linear merit profiles okf the proposals of a poll](example/screenshot_merit.png)
+
+You can specify the kind of chart you want:
+
+    ./mj example.csv --format gnuplot --chart opinion | gnuplot
 
 Available charts:
-- `merit_linear` (default)
-- `merit_circular`
-- `opinion`
+- [x] `merit` (default)
+- [x] `opinion`
+- [ ] `radial` _(good first issue)_
 
 
 ## Install

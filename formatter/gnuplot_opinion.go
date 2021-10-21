@@ -74,7 +74,15 @@ $tally << EOD
 EOD
 set datafile separator ","
 
-set title "Opinion Profile"
+set term wxt \
+    persist \
+#    size 1000, 400 \
+#    position 300, 200 \
+    background rgb '#f0f0f0' \
+    title 'Opinion Profile' \
+    font ',14'
+
+#set title "Opinion Profile"
 set xlabel 'Grades'
 set ylabel 'Judges'
 
