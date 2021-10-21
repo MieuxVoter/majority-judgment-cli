@@ -5,16 +5,6 @@ import (
 	"testing"
 )
 
-//func Test(t *testing.T) {
-//	os.Args = []string{os.Args[0], "example/example6.csv", "--format", "gnuplot"}
-//	main()
-//}
-
-//func Test2(t *testing.T) {
-//	os.Args = []string{os.Args[0], "example/example6.csv", "--fo"}
-//	main()
-//}
-
 var testData = []struct {
 	name   string
 	args   []string
