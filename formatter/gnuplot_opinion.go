@@ -65,6 +65,8 @@ func (t *GnuplotOpinionFormatter) Format(
 
 	writer.Flush()
 
+	plotWidth := 400 + len(grades)*90
+
 	gnuplotScript := `# This is a script for gnuplot http://www.gnuplot.info/
 # You may pipe it into gnuplot directly like so:
 # ./mj example.csv --format gnuplot --chart opinion | gnuplot -p
@@ -76,7 +78,7 @@ set datafile separator ","
 
 set term wxt \
     persist \
-#    size 1000, 400 \
+    size ` + strconv.Itoa(plotWidth) + `, 600 \
 #    position 300, 200 \
     background rgb '#f0f0f0' \
     title 'Opinion Profile' \
@@ -101,7 +103,7 @@ set grid ytics lt 0 lw 1 lc rgb "#bbbbbb"
 set style data histogram
 set style histogram rowstacked
 set style fill solid border -1
-set boxwidth 0.75
+set boxwidth 0.8541
 
 nb_proposals = ` + strconv.Itoa(len(proposals)) + `
 
