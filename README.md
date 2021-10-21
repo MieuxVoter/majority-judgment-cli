@@ -23,6 +23,8 @@
 - [x] `--format gnuplot`
 - [ ] `--format svg`
 - [x] `--chart`
+- [x] `--default`
+- [ ] `--normalize`
 
 
 ## Download
@@ -64,10 +66,10 @@ Majority Judgment, to stay fair, requires tallies to be balanced ; all proposals
 
 If your tally is not balanced, you may use a default judgment strategy:
 
-    mj example.csv --default-to 0
-    mj example.csv --default-to excellent
-    mj example.csv --default-to "très bien" --judges 42
-    mj example.csv --default-to-majority
+    mj example.csv --default 0
+    mj example.csv --default excellent
+    mj example.csv --default "très bien" --judges 42
+    mj example.csv --default majority
     mj example.csv --normalize
 
 
@@ -118,6 +120,7 @@ Then go into this project directory and run:
 
     go get
     go build -o mj
+    ./mj
 
 
 ### Build distributables

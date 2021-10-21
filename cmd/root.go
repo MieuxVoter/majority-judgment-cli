@@ -90,6 +90,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 		}
 		var outputFormatter formatter.Formatter
 		format := cmd.Flags().Lookup("format").Value.String()
+		defaultTo := cmd.Flags().Lookup("default").Value.String()
 		outputFormatter = &formatter.TextFormatter{}
 		if "text" == format {
 			//outputFormatter = &formatter.TextFormatter{}
@@ -182,13 +183,9 @@ multiply them beforehand by a big factor like 1 000 000 000.
 				continue
 			}
 
-			if rowIndex == 0 {
+			if 0 == rowIndex {
 				if hasGradesNamesRow {
-					if hasProposalNamesColumn {
-						grades = row[1:]
-					} else {
-						grades = row[:]
-					}
+					grades = ReadNamesRow(row[:], hasProposalNamesColumn)
 				} else {
 					if hasProposalNamesColumn {
 						grades = strings.Split(ABC[0:rowLen-1], "")
@@ -205,7 +202,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 					j := len(proposals)
 					proposals = append(proposals, "Proposal "+ABC[j:j+1])
 				}
-				proposalTally := &judgment.ProposalTally{Tally: ReadRow(row, hasProposalNamesColumn)}
+				proposalTally := &judgment.ProposalTally{Tally: ReadTallyRow(row, hasProposalNamesColumn)}
 				proposalsTallies = append(proposalsTallies, proposalTally)
 			}
 		}
@@ -218,11 +215,27 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			Proposals: proposalsTallies,
 		}
 		poll.GuessAmountOfJudges()
-		balancerErr := poll.BalanceWithStaticDefault(0)
+
+		var balancerErr error
+		defaultGradeIndex := indexOf(defaultTo, grades)
+		if -1 == defaultGradeIndex {
+			if "majority" == defaultTo || "median" == defaultTo {
+				balancerErr = poll.BalanceWithMedianDefault()
+			}
+			defaultGrade, defaultToErr := ReadNumber(defaultTo)
+			if nil != defaultToErr {
+				fmt.Printf("Unrecognized --default grade `%s`.\n", defaultTo)
+				os.Exit(ErrorConfiguring)
+			}
+			balancerErr = poll.BalanceWithStaticDefault(uint8(defaultGrade))
+		} else {
+			balancerErr = poll.BalanceWithStaticDefault(uint8(defaultGradeIndex))
+		}
 		if balancerErr != nil {
 			fmt.Println("Balancing Error:", balancerErr)
 			os.Exit(ErrorBalancing)
 		}
+
 		deliberator := &judgment.MajorityJudgment{}
 		result, err := deliberator.Deliberate(poll)
 		if err != nil {
@@ -254,8 +267,8 @@ multiply them beforehand by a big factor like 1 000 000 000.
 	},
 }
 
-// ReadRow reads a proposal tally row from strings
-func ReadRow(row []string, skipFirst bool) (tallies []uint64) {
+// ReadTallyRow reads a proposal tally row from strings
+func ReadTallyRow(row []string, skipFirst bool) (tallies []uint64) {
 	tallies = make([]uint64, 0, 10)
 	for colIndex, gradeTally := range row {
 		if skipFirst && colIndex == 0 {
@@ -263,7 +276,7 @@ func ReadRow(row []string, skipFirst bool) (tallies []uint64) {
 		}
 		n, err := ReadNumber(gradeTally)
 		if err != nil {
-			//fmt.Println("Err with ReadRow", err)
+			//fmt.Println("Err with ReadTallyRow", err)
 			n = 0 // or propagate, perhaps
 		}
 		tallies = append(tallies, uint64(n))
@@ -272,9 +285,31 @@ func ReadRow(row []string, skipFirst bool) (tallies []uint64) {
 	return tallies
 }
 
+// ReadNamesRow reads a bunch of names as strings
+func ReadNamesRow(row []string, skipFirst bool) (names []string) {
+	names = make([]string, 0, 10)
+	for i, name := range row {
+		if skipFirst && 0 == i {
+			continue
+		}
+		names = append(names, strings.TrimSpace(name))
+	}
+
+	return names
+}
+
 // ReadNumber reads the number from the input string.
 func ReadNumber(s string) (n float64, err error) {
 	return strconv.ParseFloat(strings.TrimSpace(s), 64)
+}
+
+func indexOf(element string, data []string) int {
+	for k, v := range data {
+		if element == v {
+			return k
+		}
+	}
+	return -1
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -293,8 +328,9 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.majority-judgment-cli.yaml)")
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 	rootCmd.Flags().StringP("format", "f", "text", "desired format of the output")
+	rootCmd.Flags().StringP("default", "d", "0", "default grade to use when unbalanced")
 	rootCmd.Flags().StringP("width", "w", "79", "desired width, in characters")
-	rootCmd.Flags().StringP("chart", "c", "merit", "One of merit, opinion")
+	rootCmd.Flags().StringP("chart", "c", "merit", "one of merit, opinion")
 	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
 	rootCmd.SetVersionTemplate("{{.Version}}\n" + version.BuildDate + "\n")
