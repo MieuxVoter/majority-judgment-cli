@@ -192,6 +192,9 @@ multiply them beforehand by a big factor like 1 000 000 000.
 					} else {
 						grades = strings.Split(ABC[0:rowLen], "")
 					}
+					for i, j := 0, len(grades)-1; i < j; i, j = i+1, j-1 {
+						grades[i], grades[j] = "Grade "+grades[j], "Grade "+grades[i]
+					}
 				}
 			}
 
