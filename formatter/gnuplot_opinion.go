@@ -32,6 +32,9 @@ func (t *GnuplotOpinionFormatter) Format(
 			proposalsNames = append(proposalsNames, proposals[proposalResult.Index])
 		}
 	}
+	for i, proposalName := range proposalsNames {
+		proposalsNames[i] = TruncateString(proposalName, 16)
+	}
 
 	buffer := new(bytes.Buffer)
 	writer := csv.NewWriter(buffer)
@@ -79,21 +82,30 @@ set datafile separator ","
 set term wxt \
     persist \
     size ` + strconv.Itoa(plotWidth) + `, 600 \
-#    position 300, 200 \
     background rgb '#f0f0f0' \
     title 'Opinion Profile' \
     font ',14'
 
 #set title "Opinion Profile"
-set xlabel 'Grades'
+#set key below height 200
+#set xlabel 'Grades'
 set ylabel 'Judges'
 
 set border 11
 
+
+set key samplen 2 spacing 0.85
+
 set key \
-	top left \
-	outside horizontal \
-	autotitle columnhead
+    out \
+    center bottom \
+    horizontal \
+    spacing 1 \
+    box \
+    maxrows 1 \
+	autotitle \
+	columnhead \
+    width 0.8541
 
 set xtics nomirror scale 0
 set ytics out nomirror
