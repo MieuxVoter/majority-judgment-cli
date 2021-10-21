@@ -64,6 +64,8 @@ func (t *GnuplotMeritFormatter) Format(
 	}
 	writer.Flush()
 
+	plotHeight := 350 + 24*len(proposals)
+
 	gnuplotScript := `# This is a script for gnuplot http://www.gnuplot.info/
 # You may pipe it into gnuplot directly like so:
 # ./mj example.csv --format gnuplot | gnuplot -p
@@ -74,8 +76,8 @@ set datafile separator ','
 
 set term wxt \
     persist \
-    size 1000, 400 \
-    position 300, 200 \
+    size 1000, ` + strconv.Itoa(plotHeight) + ` \
+    #position 300, 200 \
     background rgb '#f0f0f0' \
     title 'Merit Profiles' \
     font ',12'
