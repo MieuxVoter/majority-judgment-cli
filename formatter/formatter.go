@@ -21,3 +21,31 @@ type Formatter interface {
 		options *Options,
 	) (string, error)
 }
+
+// TruncateString safely truncates a string (hopefully)
+// from https://dev.to/takakd/go-safe-truncate-string-9h0
+func TruncateString(str string, length int) string {
+	if length <= 0 {
+		return ""
+	}
+
+	// This code cannot support Japanese
+	// orgLen := len(str)
+	// if orgLen <= length {
+	//     return str
+	// }
+	// return str[:length]
+
+	// Support Japanese
+	// Ref: Range loops https://blog.golang.org/strings
+	truncated := ""
+	count := 0
+	for _, char := range str {
+		truncated += string(char)
+		count++
+		if count >= length {
+			break
+		}
+	}
+	return truncated
+}
