@@ -20,6 +20,7 @@
 - [x] `--format json`
 - [x] `--format csv`
 - [x] `--format yml`
+- [ ] `--format gnuplot`
 - [ ] `--format svg`
 - [ ] `--chart`
 
@@ -56,7 +57,10 @@ or use `-` to read from `stdin`:
 
     cat example.csv | mj -
 
+
 ### Balancing
+
+Majority Judgment, to stay fair, requires tallies to be balanced ; all proposals must have received the same amount of judgments.
 
 If your tally is not balanced, you may use a default judgment strategy:
 
@@ -65,6 +69,7 @@ If your tally is not balanced, you may use a default judgment strategy:
     mj example.csv --default-to "très bien" --judges 42
     mj example.csv --default-to-majority
     mj example.csv --normalize
+
 
 ### Formats
 

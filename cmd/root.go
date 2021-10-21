@@ -38,7 +38,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:     "mj FILE",
 	Version: version.GitSummary,
-	Short:   "Rank Majority Judgment polls",
+	Short:   "Rank proposals in Majority Judgment polls",
 	Long: `Resolve majority judgment polls from an input CSV.
 
 Say you have the following tally in a CSV file named example.csv:
@@ -86,6 +86,8 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			outputFormatter = &formatter.CsvFormatter{}
 		} else if "yml" == format || "yaml" == format {
 			outputFormatter = &formatter.YamlFormatter{}
+		} else if "gnuplot-opinion" == format || "gnuplot_opinion" == format {
+			outputFormatter = &formatter.GnuplotOpinionFormatter{}
 		} else if "svg" == format {
 			panic("todo")
 		} else {
