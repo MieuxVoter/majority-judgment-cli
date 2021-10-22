@@ -118,7 +118,8 @@ unset mouse
 
 nb_grades = ` + strconv.Itoa(len(grades)) + `
 box_width = 0.9
-array colors = ['#e63333', '#fa850a', '#e0b800', '#99c21f', '#48a948', '#338033']
+#array colors = ['#e63333', '#fa850a', '#e0b800', '#99c21f', '#48a948', '#338033']
+array colors = [` + judgment.DumpPaletteHexString(judgment.CreateDefaultPalette(len(grades)), ", ", "'") + `]
 
 plot for [col=2: nb_grades + 1] \
     $data u col: 0 : \
