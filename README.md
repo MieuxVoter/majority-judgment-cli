@@ -72,10 +72,11 @@ If your tally is not balanced, you may use a default judgment strategy:
     mj example.csv --default majority
     mj example.csv --normalize
 
+The default balancing strategy is to replace missing votes with the "worst", most conservative vote, that is `--default 0`.
 
 ### Formats
 
-You can specify the format:
+You can specify the format of the output:
 
     ./mj example.csv --format json > results.json
     ./mj example.csv --format csv > results.csv
@@ -96,6 +97,7 @@ Available charts:
 - [x] `merit` (default)
 - [x] `opinion`
 - [ ] `radial`? _(good first issue)_
+- [ ] a LOT more would be possible with more detailed data, per participant
 
 
 ## Install

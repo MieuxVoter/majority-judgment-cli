@@ -205,7 +205,16 @@ multiply them beforehand by a big factor like 1 000 000 000.
 					j := len(proposals)
 					proposals = append(proposals, "Proposal "+ABC[j:j+1])
 				}
-				proposalTally := &judgment.ProposalTally{Tally: ReadTallyRow(row, hasProposalNamesColumn)}
+				tallyOfFloats, tallyErr := ReadTallyRow(row, hasProposalNamesColumn)
+				if nil != tallyErr {
+					fmt.Println("Failed to read input CSV: ", err)
+					os.Exit(ErrorReading)
+				}
+				tallyOfInts := make([]uint64, 0, 7)
+				for _, gradeTally := range tallyOfFloats {
+					tallyOfInts = append(tallyOfInts, uint64(gradeTally))
+				}
+				proposalTally := &judgment.ProposalTally{Tally: tallyOfInts}
 				proposalsTallies = append(proposalsTallies, proposalTally)
 			}
 		}
@@ -271,21 +280,23 @@ multiply them beforehand by a big factor like 1 000 000 000.
 }
 
 // ReadTallyRow reads a proposal tally row from strings
-func ReadTallyRow(row []string, skipFirst bool) (tallies []uint64) {
-	tallies = make([]uint64, 0, 10)
+func ReadTallyRow(row []string, skipFirst bool) ([]float64, error) {
+	tallies := make([]float64, 0, 7)
 	for colIndex, gradeTally := range row {
 		if skipFirst && colIndex == 0 {
 			continue
 		}
-		n, err := ReadNumber(gradeTally)
+		gradeTallyFloat, err := ReadNumber(gradeTally)
 		if err != nil {
-			//fmt.Println("Err with ReadTallyRow", err)
-			n = 0 // or propagate, perhaps
+			return nil, fmt.Errorf("failed to read `%s` as number: %s", gradeTally, err.Error())
 		}
-		tallies = append(tallies, uint64(n))
+		if gradeTallyFloat < 0 {
+			return nil, fmt.Errorf("strictly negative numbers are not allowed, but got `%s`", gradeTally)
+		}
+		tallies = append(tallies, gradeTallyFloat)
 	}
 
-	return tallies
+	return tallies, nil
 }
 
 // ReadNamesRow reads a bunch of names as strings
@@ -336,10 +347,8 @@ func init() {
 	rootCmd.Flags().StringP("chart", "c", "merit", "one of merit, opinion")
 	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
-	rootCmd.SetVersionTemplate("{{.Version}}\n" + version.BuildDate + "\n")
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by Rank")
+	rootCmd.SetVersionTemplate("{{.Version}}\n" + version.BuildDate + "\n")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -352,10 +361,10 @@ func initConfig() {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".majority-judgment-cli" (without extension).
+		// Search config in home directory with name ".mj.yml"
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".majority-judgment-cli")
+		viper.SetConfigName(".mj.yml")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
