@@ -104,8 +104,8 @@ set arrow \
     dt 2 \
     front
 
-set format x '%.0f%%'
-set xtics out 20
+#set format x '%.0f%%'
+set xtics out
 
 # set title 'Merit profile'
 # set bmargin at screen 0.2
@@ -124,8 +124,8 @@ array colors = [` + judgment.DumpPaletteHexString(judgment.CreateDefaultPalette(
 plot for [col=2: nb_grades + 1] \
     $data u col: 0 : \
     ( total = sum [i=2: nb_grades + 1] column(i), \
-    ( sum [i=2: col-1] column(i) / total * 100)): \
-    ( sum [i=2: col  ] column(i) / total * 100) : \
+    ( sum [i=2: col-1] column(i))): \
+    ( sum [i=2: col  ] column(i)) : \
     ($0 - box_width / 2.) : \
     ($0 + box_width / 2.) : \
     ytic(1) \
