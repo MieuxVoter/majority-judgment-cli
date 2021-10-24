@@ -62,12 +62,15 @@ or
 
 	cat example.csv > mj -
 
+You probably want to sort the proposals by rank, as well:
+
+	mj example.csv --sort
+
 Get different formats as output:
 
 	mj example.csv --format json
 	mj example.csv --format yml
 	mj example.csv --format csv
-	mj example.csv --format svg (todo)
 	mj example.csv --format gnuplot
 	mj example.csv --format gnuplot --chart opinion
 
@@ -115,7 +118,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 		} else if "gnuplot-opinion" == format || "gnuplot_opinion" == format {
 			outputFormatter = &formatter.GnuplotOpinionFormatter{}
 		} else if "svg" == format {
-			panic("todo")
+			panic("todo: see ")
 		} else {
 			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json, yaml\n", format)
 			os.Exit(ErrorConfiguring)

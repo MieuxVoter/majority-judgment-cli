@@ -93,6 +93,8 @@ You can specify the kind of chart you want:
 
     ./mj example.csv --format gnuplot --chart opinion | gnuplot
 
+![Opinion chart, the cumulative amounts of judgments per grade](example/screenshot_opinion.png)
+
 Available charts:
 - [x] `merit` (default)
 - [x] `opinion`
