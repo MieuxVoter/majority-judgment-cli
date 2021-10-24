@@ -61,18 +61,19 @@ func ReadNumber(s string) (n float64, err error) {
 	return strconv.ParseFloat(strings.TrimSpace(s), 64)
 }
 
-const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+const Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
-func GenerateDefaultGrades(thatMany int) (grades []string, err error) {
+// GenerateDummyGradeNames generates dummy grade names in reverse alphabetical order
+func GenerateDummyGradeNames(thatMany int) (grades []string, err error) {
 	if thatMany < 0 {
-		err = fmt.Errorf("cannot generate negative amounts of grades (got %d)", thatMany)
+		err = fmt.Errorf("cannot generate negative amounts of grades (tried %d)", thatMany)
 		return
 	}
-	if thatMany > len(ABC) {
-		err = fmt.Errorf("no more than %d different grades can be generated (tried %d)", len(ABC), thatMany)
+	if thatMany > len(Alphabet) {
+		err = fmt.Errorf("no more than %d different grades can be generated (tried %d)", len(Alphabet), thatMany)
 		return
 	}
-	grades = strings.Split(ABC[0:thatMany], "")
+	grades = strings.Split(Alphabet[0:thatMany], "")
 	for i, j := 0, thatMany-1; i < j; i, j = i+1, j-1 {
 		grades[i], grades[j] = "Grade "+grades[j], "Grade "+grades[i]
 	}
