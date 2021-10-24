@@ -84,7 +84,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 		if len(args) != 1 {
 			// Our FILE positional argument is mandatory
@@ -210,7 +210,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 				}
 				tallyOfFloats, tallyErr := ReadTallyRow(row, hasProposalNamesColumn)
 				if nil != tallyErr {
-					fmt.Println("Failed to read input CSV: ", err)
+					fmt.Println("Failed to read input tally:", err)
 					os.Exit(ErrorReading)
 				}
 				tallyOfInts := make([]uint64, 0, 7)
