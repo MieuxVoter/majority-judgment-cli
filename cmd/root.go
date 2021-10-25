@@ -170,7 +170,6 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		for _, proposalTallyAsFloats := range tallies {
 			proposalTallyAsInts := make([]uint64, 0, 7)
 			for _, gradeTallyAsFloat := range proposalTallyAsFloats {
-				//proposalTallyAsInts = append(proposalTallyAsInts, uint64(gradeTallyAsFloat))
 				proposalTallyAsInts = append(proposalTallyAsInts, uint64(gradeTallyAsFloat*precisionScale))
 			}
 			proposalTally := &judgment.ProposalTally{Tally: proposalTallyAsInts}

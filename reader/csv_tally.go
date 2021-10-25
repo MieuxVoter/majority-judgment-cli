@@ -85,7 +85,7 @@ func (r CsvTallyReader) DetectShape(rows [][]string) (hasGradesNamesRow bool, ha
 
 	for rowIndex, row := range rows {
 		if rowIndex == 0 {
-			for i := len(row) - 1; i >= 0; i-- {
+			for i := len(row) - 1; i >= 1; i-- {
 				if "" == strings.TrimSpace(row[i]) {
 					continue
 				}
