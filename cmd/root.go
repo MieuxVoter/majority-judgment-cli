@@ -125,14 +125,14 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		if "-" == fileParameter {
 			csvReader = bufio.NewReader(os.Stdin)
 		} else {
-			csvFile, err := os.Open(fileParameter)
-			if err != nil {
-				fmt.Println(err)
+			csvFile, errOpen := os.Open(fileParameter)
+			if errOpen != nil {
+				fmt.Println(errOpen)
 			}
 			defer func(csvFile *os.File) {
-				err := csvFile.Close()
-				if err != nil {
-					fmt.Println(err)
+				errClosing := csvFile.Close()
+				if errClosing != nil {
+					fmt.Println(errClosing)
 				}
 			}(csvFile)
 			csvReader = csvFile
@@ -144,14 +144,34 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 
 		_, tallies, proposals, grades, errReader := tallyReader.Read(&csvReader)
 		if errReader != nil {
-			fmt.Printf("Failed to read the input file: " + errReader.Error())
+			fmt.Printf("Failed to read input: " + errReader.Error() + "\n")
 			os.Exit(ErrorReading)
+		}
+
+		maximumPrecisionScale := 1000000.0
+		precisionScale := 1.0
+		for _, proposalTallyAsFloats := range tallies {
+			for _, gradeTallyAsFloat := range proposalTallyAsFloats {
+				if precisionScale >= maximumPrecisionScale {
+					break
+				}
+				for float64(uint64(gradeTallyAsFloat*precisionScale)) != gradeTallyAsFloat*precisionScale {
+					if precisionScale >= maximumPrecisionScale {
+						break
+					}
+					precisionScale *= 10.0
+				}
+			}
+			if precisionScale > maximumPrecisionScale {
+				break
+			}
 		}
 
 		for _, proposalTallyAsFloats := range tallies {
 			proposalTallyAsInts := make([]uint64, 0, 7)
 			for _, gradeTallyAsFloat := range proposalTallyAsFloats {
-				proposalTallyAsInts = append(proposalTallyAsInts, uint64(gradeTallyAsFloat))
+				//proposalTallyAsInts = append(proposalTallyAsInts, uint64(gradeTallyAsFloat))
+				proposalTallyAsInts = append(proposalTallyAsInts, uint64(gradeTallyAsFloat*precisionScale))
 			}
 			proposalTally := &judgment.ProposalTally{Tally: proposalTallyAsInts}
 			proposalsTallies = append(proposalsTallies, proposalTally)
@@ -194,8 +214,9 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 			desiredWidth = 79
 		}
 		options := &formatter.Options{
-			Sorted: bool(cmd.Flags().Lookup("sort").Changed),
+			Sorted: cmd.Flags().Lookup("sort").Changed,
 			Width:  desiredWidth,
+			Scale:  precisionScale,
 		}
 
 		out, formatterErr := outputFormatter.Format(

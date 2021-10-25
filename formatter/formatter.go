@@ -7,6 +7,7 @@ import "github.com/mieuxvoter/majority-judgment-library-go/judgment"
 type Options struct {
 	Sorted bool
 	Width  int
+	Scale  float64 // so we can use integers internally, and display floats
 }
 
 // Formatter to implement to make another formatter
