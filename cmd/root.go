@@ -18,9 +18,9 @@ package cmd
 
 import (
 	"bufio"
-	"encoding/csv"
 	"fmt"
 	"github.com/MieuxVoter/majority-judgment-cli/formatter"
+	"github.com/MieuxVoter/majority-judgment-cli/reader"
 	"github.com/MieuxVoter/majority-judgment-cli/version"
 	"github.com/spf13/cobra"
 	"io"
@@ -78,16 +78,10 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 
 	mj example.csv --sort --format gnuplot | gnuplot
 
-Only positive integers are supported in tallies.
-If you used normalization and have real, floating-point values,
-multiply them beforehand by a big factor like 1 000 000 000.
-
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		const ABC = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
 		if len(args) != 1 {
-			// Our FILE positional argument is mandatory
+			// Our FILE positional argument is mandatory.
 			_ = cmd.Help()
 			return
 		}
@@ -118,7 +112,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 		} else if "gnuplot-opinion" == format || "gnuplot_opinion" == format {
 			outputFormatter = &formatter.GnuplotOpinionFormatter{}
 		} else if "svg" == format {
-			panic("todo: see ")
+			panic("todo: see issue https://github.com/MieuxVoter/majority-judgment-cli/issues/11")
 		} else {
 			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json, yaml\n", format)
 			os.Exit(ErrorConfiguring)
@@ -131,99 +125,55 @@ multiply them beforehand by a big factor like 1 000 000 000.
 		if "-" == fileParameter {
 			csvReader = bufio.NewReader(os.Stdin)
 		} else {
-			csvFile, err := os.Open(fileParameter)
-			if err != nil {
-				fmt.Println(err)
+			csvFile, errOpen := os.Open(fileParameter)
+			if errOpen != nil {
+				fmt.Println(errOpen)
 			}
 			defer func(csvFile *os.File) {
-				err := csvFile.Close()
-				if err != nil {
-					fmt.Println(err)
+				errClosing := csvFile.Close()
+				if errClosing != nil {
+					fmt.Println(errClosing)
 				}
 			}(csvFile)
 			csvReader = csvFile
 		}
-		csvRows, err := csv.NewReader(csvReader).ReadAll()
-		if err != nil {
-			fmt.Println("Failed to read input CSV:", err)
+
+		var tallyReader reader.Reader
+
+		tallyReader = reader.CsvTallyReader{}
+
+		_, tallies, proposals, grades, errReader := tallyReader.Read(&csvReader)
+		if errReader != nil {
+			fmt.Printf("Failed to read input: " + errReader.Error() + "\n")
 			os.Exit(ErrorReading)
 		}
 
-		var grades []string
-		var proposals []string
-		hasGradesNamesRow := false
-		hasProposalNamesColumn := false
-		for rowIndex, row := range csvRows {
-			if rowIndex == 0 {
-				rowLen := len(row)
-				for i := 1; i < rowLen; i++ {
-					if "" == strings.TrimSpace(row[i]) {
-						continue
-					}
-					_, err := ReadNumber(row[i])
-					if err != nil {
-						hasGradesNamesRow = true
+		maximumPrecisionScale := 1000000.0
+		precisionScale := 1.0
+		for _, proposalTallyAsFloats := range tallies {
+			for _, gradeTallyAsFloat := range proposalTallyAsFloats {
+				if precisionScale >= maximumPrecisionScale {
+					break
+				}
+				for float64(uint64(gradeTallyAsFloat*precisionScale)) != gradeTallyAsFloat*precisionScale {
+					if precisionScale >= maximumPrecisionScale {
 						break
 					}
+					precisionScale *= 10.0
 				}
 			}
-
-			if !hasGradesNamesRow || 0 != rowIndex {
-				if "" == strings.TrimSpace(row[0]) {
-					continue
-				}
-				_, err := ReadNumber(row[0])
-				if err != nil {
-					hasProposalNamesColumn = true
-				}
-			}
-
-		}
-
-		for rowIndex, row := range csvRows {
-			rowLen := len(row)
-			if rowLen < 2 {
-				continue
-			}
-
-			if 0 == rowIndex {
-				if hasGradesNamesRow {
-					grades = ReadNamesRow(row[:], hasProposalNamesColumn)
-				} else {
-					if hasProposalNamesColumn {
-						grades = strings.Split(ABC[0:rowLen-1], "")
-					} else {
-						grades = strings.Split(ABC[0:rowLen], "")
-					}
-					for i, j := 0, len(grades)-1; i < j; i, j = i+1, j-1 {
-						grades[i], grades[j] = "Grade "+grades[j], "Grade "+grades[i]
-					}
-				}
-			}
-
-			if rowIndex > 0 || !hasGradesNamesRow {
-				if hasProposalNamesColumn {
-					proposals = append(proposals, strings.TrimSpace(row[0]))
-				} else {
-					j := len(proposals)
-					proposals = append(proposals, "Proposal "+ABC[j:j+1])
-				}
-				tallyOfFloats, tallyErr := ReadTallyRow(row, hasProposalNamesColumn)
-				if nil != tallyErr {
-					fmt.Println("Failed to read input CSV: ", err)
-					os.Exit(ErrorReading)
-				}
-				tallyOfInts := make([]uint64, 0, 7)
-				for _, gradeTally := range tallyOfFloats {
-					tallyOfInts = append(tallyOfInts, uint64(gradeTally))
-				}
-				proposalTally := &judgment.ProposalTally{Tally: tallyOfInts}
-				proposalsTallies = append(proposalsTallies, proposalTally)
+			if precisionScale > maximumPrecisionScale {
+				break
 			}
 		}
 
-		for gradeIndex, grade := range grades {
-			grades[gradeIndex] = strings.TrimSpace(grade)
+		for _, proposalTallyAsFloats := range tallies {
+			proposalTallyAsInts := make([]uint64, 0, 7)
+			for _, gradeTallyAsFloat := range proposalTallyAsFloats {
+				proposalTallyAsInts = append(proposalTallyAsInts, uint64(gradeTallyAsFloat*precisionScale))
+			}
+			proposalTally := &judgment.ProposalTally{Tally: proposalTallyAsInts}
+			proposalsTallies = append(proposalsTallies, proposalTally)
 		}
 
 		poll := &judgment.PollTally{
@@ -237,7 +187,7 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			if "majority" == defaultTo || "median" == defaultTo {
 				balancerErr = poll.BalanceWithMedianDefault()
 			}
-			defaultGrade, defaultToErr := ReadNumber(defaultTo)
+			defaultGrade, defaultToErr := reader.ReadNumber(defaultTo)
 			if nil != defaultToErr {
 				fmt.Printf("Unrecognized --default grade `%s`.\n", defaultTo)
 				os.Exit(ErrorConfiguring)
@@ -263,8 +213,9 @@ multiply them beforehand by a big factor like 1 000 000 000.
 			desiredWidth = 79
 		}
 		options := &formatter.Options{
-			Sorted: bool(cmd.Flags().Lookup("sort").Changed),
+			Sorted: cmd.Flags().Lookup("sort").Changed,
 			Width:  desiredWidth,
+			Scale:  precisionScale,
 		}
 
 		out, formatterErr := outputFormatter.Format(
@@ -280,53 +231,6 @@ multiply them beforehand by a big factor like 1 000 000 000.
 		}
 		fmt.Println(out)
 	},
-}
-
-// ReadTallyRow reads a proposal tally row from strings
-func ReadTallyRow(row []string, skipFirst bool) ([]float64, error) {
-	tallies := make([]float64, 0, 7)
-	for colIndex, gradeTally := range row {
-		if skipFirst && colIndex == 0 {
-			continue
-		}
-		gradeTallyFloat, err := ReadNumber(gradeTally)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read `%s` as number: %s", gradeTally, err.Error())
-		}
-		if gradeTallyFloat < 0 {
-			return nil, fmt.Errorf("strictly negative numbers are not allowed, but got `%s`", gradeTally)
-		}
-		tallies = append(tallies, gradeTallyFloat)
-	}
-
-	return tallies, nil
-}
-
-// ReadNamesRow reads a bunch of names as strings
-func ReadNamesRow(row []string, skipFirst bool) (names []string) {
-	names = make([]string, 0, 10)
-	for i, name := range row {
-		if skipFirst && 0 == i {
-			continue
-		}
-		names = append(names, strings.TrimSpace(name))
-	}
-
-	return names
-}
-
-// ReadNumber reads the number from the input string.
-func ReadNumber(s string) (n float64, err error) {
-	return strconv.ParseFloat(strings.TrimSpace(s), 64)
-}
-
-func indexOf(element string, data []string) int {
-	for k, v := range data {
-		if element == v {
-			return k
-		}
-	}
-	return -1
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -376,4 +280,15 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+// indexOf searches the data for the element, and returns its index, or -1
+// Go's typing is pretty strict, hence the need for a grunt function like this.
+func indexOf(element string, data []string) int {
+	for k, v := range data {
+		if element == v {
+			return k
+		}
+	}
+	return -1
 }
