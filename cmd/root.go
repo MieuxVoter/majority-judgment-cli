@@ -112,7 +112,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		} else if "gnuplot-opinion" == format || "gnuplot_opinion" == format {
 			outputFormatter = &formatter.GnuplotOpinionFormatter{}
 		} else if "svg" == format {
-			panic("todo: see issue ")
+			panic("todo: see issue https://github.com/MieuxVoter/majority-judgment-cli/issues/11")
 		} else {
 			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json, yaml\n", format)
 			os.Exit(ErrorConfiguring)
