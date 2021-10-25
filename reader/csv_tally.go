@@ -25,34 +25,7 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 	}
 
 	// II. Detect the shape/structure of the input file
-	hasGradesNamesRow := false
-	hasProposalNamesColumn := false
-
-	for rowIndex, row := range csvRows {
-		if rowIndex == 0 {
-			for i := len(row) - 1; i >= 0; i-- {
-				if "" == strings.TrimSpace(row[i]) {
-					continue
-				}
-				_, errDetection := ReadNumber(row[i])
-				if errDetection != nil {
-					hasGradesNamesRow = true
-					break
-				}
-			}
-		}
-
-		if !hasGradesNamesRow || 0 != rowIndex {
-			if "" == strings.TrimSpace(row[0]) {
-				continue
-			}
-			_, errDetection := ReadNumber(row[0])
-			if errDetection != nil {
-				hasProposalNamesColumn = true
-			}
-		}
-
-	}
+	hasGradesNamesRow, hasProposalNamesColumn := r.DetectShape(csvRows)
 
 	// III. Read the tallies, proposals, grades
 	for rowIndex, row := range csvRows {
@@ -102,6 +75,39 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 	//for gradeIndex, grade := range grades {
 	//	grades[gradeIndex] = strings.TrimSpace(grade)
 	//}
+
+	return
+}
+
+func (r CsvTallyReader) DetectShape(rows [][]string) (hasGradesNamesRow bool, hasProposalNamesColumn bool) {
+	hasGradesNamesRow = false
+	hasProposalNamesColumn = false
+
+	for rowIndex, row := range rows {
+		if rowIndex == 0 {
+			for i := len(row) - 1; i >= 0; i-- {
+				if "" == strings.TrimSpace(row[i]) {
+					continue
+				}
+				_, errDetection := ReadNumber(row[i])
+				if errDetection != nil {
+					hasGradesNamesRow = true
+					break
+				}
+			}
+		}
+
+		if !hasGradesNamesRow || 0 != rowIndex {
+			if "" == strings.TrimSpace(row[0]) {
+				continue
+			}
+			_, errDetection := ReadNumber(row[0])
+			if errDetection != nil {
+				hasProposalNamesColumn = true
+			}
+		}
+
+	}
 
 	return
 }
