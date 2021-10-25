@@ -8,24 +8,6 @@
 ![LoC](https://img.shields.io/tokei/lines/github/MieuxVoter/majority-judgment-cli?style=for-the-badge)
 [![Discord Chat](https://img.shields.io/discord/705322981102190593.svg?style=for-the-badge)](https://discord.gg/rAAQG9S)
 
-> **WORK IN PROGRESS**
-> Although the core mechanics are here and ranking does work,
-> the features described in this README are not all implemented.
-> We're merely doc-driving this tool, and our doc is ambitious.
-
-- [x] Read from stdin with `-`
-- [x] Read `CSV` file
-- [x] `--sort`
-- [x] `--format text`
-- [x] `--format json`
-- [x] `--format csv`
-- [x] `--format yml`
-- [x] `--format gnuplot`
-- [ ] `--format svg`
-- [x] `--chart`
-- [x] `--default`
-- [ ] `--normalize`
-
 
 ## Download
 
@@ -47,13 +29,20 @@ You can run
 
 and get
 
-![Output of the command ; merit profiles are drawn in ASCII Art](example/screenshot.png)
+    #2   Pizza 0000000000000111111111222233333333|333333334444444444444444455555555
+    #1   Chips 0000000001111111111111333333333333|333344444444444445555555555555555
+    #3   Pasta 0000000000000000011111111111111111|111222233333333333333333555555555
+    
+    Legend:  0=reject  1=poor  2=fair  3=good  4=very good  5=excellent
+
 
 You probably want to `--sort` the proposals as well:
 
-    ./mj example.csv --sort
-
-![Output of the command ; the same but with sorted proposals](example/screenshot_sorted.png)
+    #1   Chips 0000000001111111111111333333333333|333344444444444445555555555555555
+    #2   Pizza 0000000000000111111111222233333333|333333334444444444444444455555555
+    #3   Pasta 0000000000000000011111111111111111|111222233333333333333333555555555
+    
+    Legend:  0=reject  1=poor  2=fair  3=good  4=very good  5=excellent
 
 or use `-` to read from `stdin`:
 
@@ -62,9 +51,9 @@ or use `-` to read from `stdin`:
 
 ### Balancing
 
-Majority Judgment, to stay fair, requires tallies to be balanced ; all proposals must have received the same amount of judgments.
+Majority Judgment, to stay fair, requires tallies to be balanced ; **all proposals must have received the same amount of judgments**.
 
-If your tally is not balanced, you may use a default judgment strategy:
+If your tally is not balanced, you may use a _default judgment strategy_:
 
     mj example.csv --default 0
     mj example.csv --default excellent
@@ -98,7 +87,7 @@ You can specify the kind of chart you want:
 Available charts:
 - [x] `merit` (default)
 - [x] `opinion`
-- [ ] `radial`? _(good first issue)_
+- [ ] …
 - [ ] a LOT more would be possible with more detailed data, per participant
 
 
@@ -149,5 +138,4 @@ You can run `upx` on the binary to reduce its size:
 
     GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o mj.exe
 
-Packing the Windows executable with `upx` appears to trigger antivirus software.
-
+Sometimes, Go builds are [falsely detected](https://golang.org/doc/faq#virus) by antiviral software.
