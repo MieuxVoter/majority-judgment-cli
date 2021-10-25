@@ -53,8 +53,7 @@ func (t *GnuplotMeritFormatter) Format(
 		row := make([]string, 0, 10)
 		row = append(row, TruncateString(proposals[proposalResult.Index], 23))
 
-		for gradeIndex, _ := range grades {
-			//row = append(row, strconv.FormatUint(proposalTally.Tally[gradeIndex], 10))
+		for gradeIndex := range grades {
 			row = append(row, strconv.FormatFloat(
 				float64(proposalTally.Tally[gradeIndex])/(float64(pollTally.AmountOfJudges)*options.Scale),
 				'f', -1, 64,
