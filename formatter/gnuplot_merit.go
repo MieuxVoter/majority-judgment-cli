@@ -54,7 +54,11 @@ func (t *GnuplotMeritFormatter) Format(
 		row = append(row, TruncateString(proposals[proposalResult.Index], 23))
 
 		for gradeIndex, _ := range grades {
-			row = append(row, strconv.FormatUint(proposalTally.Tally[gradeIndex], 10))
+			//row = append(row, strconv.FormatUint(proposalTally.Tally[gradeIndex], 10))
+			row = append(row, strconv.FormatFloat(
+				float64(proposalTally.Tally[gradeIndex])/(float64(pollTally.AmountOfJudges)*options.Scale),
+				'f', -1, 64,
+			))
 		}
 
 		writeErr := writer.Write(row)
@@ -65,6 +69,8 @@ func (t *GnuplotMeritFormatter) Format(
 	writer.Flush()
 
 	plotHeight := 350 + 24*len(proposals)
+
+	hexPalette := judgment.DumpPaletteHexString(judgment.CreateDefaultPalette(len(grades)), ", ", "'")
 
 	gnuplotScript := `# This is a script for gnuplot http://www.gnuplot.info/
 # You may pipe it into gnuplot directly like so:
@@ -104,7 +110,7 @@ set arrow \
     dt 2 \
     front
 
-#set format x '%.0f%%'
+set format x '%.0f%%'
 set xtics out
 
 # set title 'Merit profile'
@@ -119,13 +125,13 @@ unset mouse
 nb_grades = ` + strconv.Itoa(len(grades)) + `
 box_width = 0.9
 #array colors = ['#e63333', '#fa850a', '#e0b800', '#99c21f', '#48a948', '#338033']
-array colors = [` + judgment.DumpPaletteHexString(judgment.CreateDefaultPalette(len(grades)), ", ", "'") + `]
+array colors = [` + hexPalette + `]
 
 plot for [col=2: nb_grades + 1] \
     $data u col: 0 : \
     ( total = sum [i=2: nb_grades + 1] column(i), \
-    ( sum [i=2: col-1] column(i))): \
-    ( sum [i=2: col  ] column(i)) : \
+    ( sum [i=2: col-1] column(i)) / total * 100): \
+    ( sum [i=2: col  ] column(i)) / total * 100 : \
     ($0 - box_width / 2.) : \
     ($0 + box_width / 2.) : \
     ytic(1) \
