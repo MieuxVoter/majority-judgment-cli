@@ -33,7 +33,7 @@ func (t *GnuplotOpinionFormatter) Format(
 		}
 	}
 	for i, proposalName := range proposalsNames {
-		proposalsNames[i] = TruncateString(proposalName, 16, '…')
+		proposalsNames[i] = truncateString(proposalName, 16, '…')
 	}
 
 	buffer := new(bytes.Buffer)
