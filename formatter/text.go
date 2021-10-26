@@ -62,7 +62,7 @@ func (t *TextFormatter) Format(
 		line += fmt.Sprintf(
 			" %*s ",
 			amountOfCharactersForProposal,
-			proposals[proposalResult.Index],
+			TruncateString(proposals[proposalResult.Index], amountOfCharactersForProposal, '…'),
 		)
 
 		remainingWidth := expectedWidth - len(line)

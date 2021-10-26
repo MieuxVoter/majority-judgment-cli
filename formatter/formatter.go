@@ -25,28 +25,25 @@ type Formatter interface {
 
 // TruncateString safely truncates a string (hopefully)
 // from https://dev.to/takakd/go-safe-truncate-string-9h0
-func TruncateString(str string, length int) string {
+// with some tweaks, like the suffix ; the length includes the suffix
+// Supports Japanese, see Range loops https://blog.golang.org/strings
+// Provide a space as rune to disable the suffix
+func TruncateString(str string, length int, suffix rune) string {
 	if length <= 0 {
 		return ""
 	}
 
-	// This code cannot support Japanese
-	// orgLen := len(str)
-	// if orgLen <= length {
-	//     return str
-	// }
-	// return str[:length]
-
-	// Support Japanese
-	// Ref: Range loops https://blog.golang.org/strings
 	truncated := ""
 	count := 0
 	for _, char := range str {
-		truncated += string(char)
-		count++
 		if count >= length {
+			if suffix != ' ' {
+				truncated = replaceAtIndex(truncated, suffix, length-1)
+			}
 			break
 		}
+		truncated += string(char)
+		count++
 	}
 	return truncated
 }
