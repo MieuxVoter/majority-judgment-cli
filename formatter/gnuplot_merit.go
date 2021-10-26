@@ -99,9 +99,9 @@ set key \
     maxrows 1 \
     width 0.8
 
-#set style fill solid 1.0
-set style fill solid border lc rgb '#f0f0f0'                                             
+set style fill solid border lc rgb '#f0f0f0'
 
+# Median vertical dotted bar
 set arrow \
     from 50,-0.5 \
     to 50,` + strconv.Itoa(len(proposals)) + `.0 \
@@ -115,15 +115,13 @@ set xtics out
 # set title 'Merit profile'
 # set bmargin at screen 0.2
 
+# Or the gates of confusion will break loose
 unset mouse
 
 #stats $data using 0
 
-#set style fill solid border -1
-
-nb_grades = ` + strconv.Itoa(len(grades)) + `
 box_width = 1.0
-#array colors = ['#e63333', '#fa850a', '#e0b800', '#99c21f', '#48a948', '#338033']
+nb_grades = ` + strconv.Itoa(len(grades)) + `
 array colors = [` + hexPalette + `]
 
 plot for [col=2: nb_grades + 1] \
