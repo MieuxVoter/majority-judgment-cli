@@ -23,6 +23,16 @@ type Formatter interface {
 	) (string, error)
 }
 
+// measureStringLength with support for unicode (hopefully)
+// Heavy-duty replacement for len(str)
+func measureStringLength(str string) int {
+	count := 0
+	for range str {
+		count++
+	}
+	return count
+}
+
 // truncateString safely truncates a string (hopefully)
 // from https://dev.to/takakd/go-safe-truncate-string-9h0
 // with some tweaks, like the suffix ; the length includes the suffix
@@ -46,4 +56,10 @@ func truncateString(str string, length int, suffix rune) string {
 		count++
 	}
 	return truncated
+}
+
+func replaceAtIndex(in string, r rune, i int) string {
+	out := []rune(in)
+	out[i] = r
+	return string(out)
 }

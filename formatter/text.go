@@ -45,7 +45,7 @@ func (t *TextFormatter) Format(
 	amountOfCharactersForProposal := 1
 	maximumAmountOfCharactersForProposal := 30
 	for _, proposal := range proposals {
-		thatProposalLength := len(proposal)
+		thatProposalLength := measureStringLength(proposal)
 		if thatProposalLength > amountOfCharactersForProposal {
 			amountOfCharactersForProposal = thatProposalLength
 		}
@@ -65,7 +65,7 @@ func (t *TextFormatter) Format(
 			truncateString(proposals[proposalResult.Index], amountOfCharactersForProposal, '…'),
 		)
 
-		remainingWidth := expectedWidth - len(line)
+		remainingWidth := expectedWidth - measureStringLength(line)
 
 		line += makeAsciiMeritProfile(
 			pollTally.Proposals[proposalResult.Index],
@@ -130,10 +130,4 @@ func getCharForGrade(gradeIndex int) string {
 	const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	gradeIndex = gradeIndex % len(chars)
 	return chars[gradeIndex : gradeIndex+1]
-}
-
-func replaceAtIndex(in string, r rune, i int) string {
-	out := []rune(in)
-	out[i] = r
-	return string(out)
 }

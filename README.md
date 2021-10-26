@@ -112,8 +112,11 @@ Example:
 Then go into this project directory and run:
 
     go get
+    go run .
+    go run . example/example.csv --sort
     go build -o mj
     ./mj
+    ./mj example/example.csv --sort
 
 
 ### Build distributables
