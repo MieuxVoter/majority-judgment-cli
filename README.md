@@ -139,3 +139,8 @@ You can run `upx` on the binary to reduce its size:
     GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o mj.exe
 
 Sometimes, Go builds for Windows are [falsely detected](https://golang.org/doc/faq#virus) by antiviral software.
+
+
+## Run tests
+
+    go test -v

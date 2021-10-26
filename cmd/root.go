@@ -85,9 +85,11 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 			_ = cmd.Help()
 			return
 		}
-		var outputFormatter formatter.Formatter
 		format := cmd.Flags().Lookup("format").Value.String()
 		defaultTo := cmd.Flags().Lookup("default").Value.String()
+		amountOfJudgesStr := cmd.Flags().Lookup("judges").Value.String()
+
+		var outputFormatter formatter.Formatter
 		outputFormatter = &formatter.TextFormatter{}
 		if "text" == format {
 			//outputFormatter = &formatter.TextFormatter{}
@@ -179,7 +181,19 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		poll := &judgment.PollTally{
 			Proposals: proposalsTallies,
 		}
-		poll.GuessAmountOfJudges()
+
+		amountOfJudges, amountOfJudgesErr := strconv.ParseInt(amountOfJudgesStr, 10, 64)
+		if nil != amountOfJudgesErr || amountOfJudges < 0 {
+			fmt.Printf("Unrecognized --judges amount `%s`.  "+
+				"Use a positive integer, like so: --judges 42\n", amountOfJudgesStr)
+			os.Exit(ErrorConfiguring)
+		}
+
+		if amountOfJudges > 0 {
+			poll.AmountOfJudges = uint64(amountOfJudges)
+		} else {
+			poll.GuessAmountOfJudges()
+		}
 
 		var balancerErr error
 		defaultGradeIndex := indexOf(defaultTo, grades)
@@ -252,6 +266,7 @@ func init() {
 	rootCmd.Flags().StringP("default", "d", "0", "default grade to use when unbalanced")
 	rootCmd.Flags().StringP("width", "w", "79", "desired width, in characters")
 	rootCmd.Flags().StringP("chart", "c", "merit", "one of merit, opinion")
+	rootCmd.Flags().Int64P("judges", "j", 0, "amount of judges participating")
 	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
 	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by Rank")

@@ -57,7 +57,9 @@ func (t *GnuplotOpinionFormatter) Format(
 
 		for _, proposalResult := range proposalsResults {
 			proposalTally := pollTally.Proposals[proposalResult.Index]
-			row = append(row, strconv.FormatUint(proposalTally.Tally[gradeIndex], 10))
+			row = append(row, strconv.FormatFloat(
+				float64(proposalTally.Tally[gradeIndex])/options.Scale,
+				'f', -1, 64))
 		}
 
 		writeErr := writer.Write(row)
