@@ -77,8 +77,8 @@ func GenerateDummyGradeNames(thatMany int) (grades []string, err error) {
 	for i, j := 0, thatMany-1; i < j; i, j = i+1, j-1 {
 		grades[i], grades[j] = grades[j], grades[i]
 	}
-	for i := thatMany - 1; i >= 0; i-- {
-		grades[i] = fmt.Sprintf("Grade %s", grades[i])
+	for i, grade := range grades {
+		grades[i] = fmt.Sprintf("Grade %s", grade)
 	}
 
 	return
