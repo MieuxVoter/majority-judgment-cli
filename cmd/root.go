@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 Unesco
+Copyright © 2021 Unescoop
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -49,10 +49,10 @@ var rootCmd = &cobra.Command{
 
 Say you have the following tally in a CSV file named example.csv:
 
-	     , reject, poor, fair, good, very good, excellent
-	Pizza,      3,    2,    1,    4,         4,        2
-	Chips,      2,    3,    0,    4,         3,        4
-	Pasta,      4,    5,    1,    4,         0,        2
+         , reject, poor, fair, good, very good, excellent
+    Pizza,      3,    2,    1,    4,         4,        2
+    Chips,      2,    3,    0,    4,         3,        4
+    Pasta,      4,    5,    1,    4,         0,        2
 
 You could run:
 
@@ -60,7 +60,7 @@ You could run:
 
 or
 
-	cat example.csv > mj -
+	cat example.csv | mj -
 
 You probably want to sort the proposals by rank, as well:
 
@@ -260,13 +260,13 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.majority-judgment-cli.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.mj.yaml)")
 	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 	rootCmd.Flags().StringP("format", "f", "text", "desired format of the output")
 	rootCmd.Flags().StringP("default", "d", "0", "default grade to use when unbalanced")
 	rootCmd.Flags().StringP("width", "w", "79", "desired width, in characters")
 	rootCmd.Flags().StringP("chart", "c", "merit", "one of merit, opinion")
-	rootCmd.Flags().Int64P("judges", "j", 0, "amount of judges participating")
+	rootCmd.Flags().Int64P("judges", "j", 0, "amount of judges participating (overrides our guess)")
 	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
 	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by Rank")
@@ -283,10 +283,10 @@ func initConfig() {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".mj.yml"
+		// Search config in home directory with name ".mj.yaml"
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".mj.yml")
+		viper.SetConfigName(".mj.yaml")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
