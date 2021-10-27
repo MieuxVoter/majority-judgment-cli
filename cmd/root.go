@@ -91,7 +91,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 
 		var outputFormatter formatter.Formatter
 		outputFormatter = &formatter.TextFormatter{}
-		if "text" == format {
+		if "text" == format || "txt" == format {
 			//outputFormatter = &formatter.TextFormatter{}
 		} else if "json" == format {
 			outputFormatter = &formatter.JsonFormatter{}
