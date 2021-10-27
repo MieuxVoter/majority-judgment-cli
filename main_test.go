@@ -21,39 +21,39 @@ var testData = []struct {
 		},
 	},
 	{
-		name: "Basic usage, example1.csv",
+		name: "Basic usage, example01.csv",
 		args: []string{
-			"example/example1.csv",
+			"example/example01.csv",
 		},
 	},
 	{
-		name: "Basic usage, example2.csv",
+		name: "Basic usage, example02.csv",
 		args: []string{
-			"example/example2.csv",
+			"example/example02.csv",
 		},
 	},
 	{
-		name: "Basic usage, example3.csv",
+		name: "Basic usage, example03.csv",
 		args: []string{
-			"example/example3.csv",
+			"example/example03.csv",
 		},
 	},
 	{
-		name: "Basic usage, example4.csv",
+		name: "Basic usage, example04.csv",
 		args: []string{
-			"example/example4.csv",
+			"example/example04.csv",
 		},
 	},
 	{
-		name: "Basic usage, example5.csv",
+		name: "Basic usage, example05.csv",
 		args: []string{
-			"example/example5.csv",
+			"example/example05.csv",
 		},
 	},
 	{
-		name: "Basic usage, example6.csv",
+		name: "Basic usage, example06.csv",
 		args: []string{
-			"example/example6.csv",
+			"example/example06.csv",
 		},
 	},
 	{
