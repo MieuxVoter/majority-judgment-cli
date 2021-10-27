@@ -25,12 +25,14 @@ func (t *GnuplotMeritFormatter) Format(
 		proposalsResults = result.ProposalsSorted
 	}
 
-	proposalsNames := proposals
+	var proposalsNames []string
 	if options.Sorted {
 		proposalsNames = make([]string, 0, 10)
 		for _, proposalResult := range proposalsResults {
 			proposalsNames = append(proposalsNames, proposals[proposalResult.Index])
 		}
+	} else {
+		proposalsNames = proposals
 	}
 
 	buffer := new(bytes.Buffer)
