@@ -200,13 +200,14 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		if -1 == defaultGradeIndex {
 			if "majority" == defaultTo || "median" == defaultTo {
 				balancerErr = poll.BalanceWithMedianDefault()
+			} else {
+				defaultGrade, defaultToErr := reader.ReadNumber(defaultTo)
+				if nil != defaultToErr {
+					fmt.Printf("Unrecognized --default grade `%s`.\n", defaultTo)
+					os.Exit(errorConfiguring)
+				}
+				balancerErr = poll.BalanceWithStaticDefault(uint8(defaultGrade))
 			}
-			defaultGrade, defaultToErr := reader.ReadNumber(defaultTo)
-			if nil != defaultToErr {
-				fmt.Printf("Unrecognized --default grade `%s`.\n", defaultTo)
-				os.Exit(errorConfiguring)
-			}
-			balancerErr = poll.BalanceWithStaticDefault(uint8(defaultGrade))
 		} else {
 			balancerErr = poll.BalanceWithStaticDefault(uint8(defaultGradeIndex))
 		}
@@ -216,9 +217,9 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		}
 
 		deliberator := &judgment.MajorityJudgment{}
-		result, err := deliberator.Deliberate(poll)
-		if err != nil {
-			fmt.Println("Deliberation Error:", err)
+		result, deliberationErr := deliberator.Deliberate(poll)
+		if deliberationErr != nil {
+			fmt.Println("Deliberation Error:", deliberationErr)
 			os.Exit(errorDeliberating)
 		}
 
@@ -240,7 +241,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 			options,
 		)
 		if formatterErr != nil {
-			fmt.Println("Formatter Error:", err)
+			fmt.Println("Formatter Error:", formatterErr)
 			os.Exit(errorFormatting)
 		}
 		fmt.Println(out)
