@@ -12,7 +12,7 @@ var slice = make([]uint64, 500*500)
 
 func BenchmarkRangeReadSliceByIndex(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		for j, _ := range slice {
+		for j := range slice {
 			Val = slice[j] + 1
 		}
 	}
@@ -28,7 +28,7 @@ func BenchmarkRangeReadSliceByValue(b *testing.B) {
 
 func BenchmarkRangeWriteSlice(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		for j, _ := range slice {
+		for j := range slice {
 			slice[j] = Val + 1
 		}
 	}

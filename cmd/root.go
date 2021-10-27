@@ -33,19 +33,19 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var configurationFilePath string
 
-const ErrorConfiguring = 1
-const ErrorReading = 2
-const ErrorBalancing = 3
-const ErrorDeliberating = 4
-const ErrorFormatting = 5
+const errorConfiguring = 1
+const errorReading = 2
+const errorBalancing = 3
+const errorDeliberating = 4
+const errorFormatting = 5
 
 var rootCmd = &cobra.Command{
 	Use:     "mj FILE",
 	Version: version.GitSummary,
-	Short:   "Rank proposals in Majority Judgment polls",
-	Long: `Resolve majority judgment polls from an input CSV.
+	Short:   "Resolve and inspect Majority Judgment polls",
+	Long: `Resolve Majority Judgment polls from an input CSV.
 
 Say you have the following tally in a CSV file named example.csv:
 
@@ -107,7 +107,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 				outputFormatter = &formatter.GnuplotOpinionFormatter{}
 			} else {
 				fmt.Printf("Chart `%s` is not supported.  Supported charts: merit, opinion\n", chart)
-				os.Exit(ErrorConfiguring)
+				os.Exit(errorConfiguring)
 			}
 		} else if "gnuplot-merit" == format || "gnuplot_merit" == format {
 			outputFormatter = &formatter.GnuplotMeritFormatter{}
@@ -117,7 +117,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 			panic("todo: see issue https://github.com/MieuxVoter/majority-judgment-cli/issues/11")
 		} else {
 			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json, yaml\n", format)
-			os.Exit(ErrorConfiguring)
+			os.Exit(errorConfiguring)
 		}
 
 		proposalsTallies := make([]*judgment.ProposalTally, 0, 10)
@@ -147,7 +147,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		_, tallies, proposals, grades, errReader := tallyReader.Read(&csvReader)
 		if errReader != nil {
 			fmt.Printf("Failed to read input: " + errReader.Error() + "\n")
-			os.Exit(ErrorReading)
+			os.Exit(errorReading)
 		}
 
 		maximumPrecisionScale := 1000000.0
@@ -186,7 +186,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		if nil != amountOfJudgesErr || amountOfJudges < 0 {
 			fmt.Printf("Unrecognized --judges amount `%s`.  "+
 				"Use a positive integer, like so: --judges 42\n", amountOfJudgesStr)
-			os.Exit(ErrorConfiguring)
+			os.Exit(errorConfiguring)
 		}
 
 		if amountOfJudges > 0 {
@@ -204,7 +204,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 			defaultGrade, defaultToErr := reader.ReadNumber(defaultTo)
 			if nil != defaultToErr {
 				fmt.Printf("Unrecognized --default grade `%s`.\n", defaultTo)
-				os.Exit(ErrorConfiguring)
+				os.Exit(errorConfiguring)
 			}
 			balancerErr = poll.BalanceWithStaticDefault(uint8(defaultGrade))
 		} else {
@@ -212,14 +212,14 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		}
 		if balancerErr != nil {
 			fmt.Println("Balancing Error:", balancerErr)
-			os.Exit(ErrorBalancing)
+			os.Exit(errorBalancing)
 		}
 
 		deliberator := &judgment.MajorityJudgment{}
 		result, err := deliberator.Deliberate(poll)
 		if err != nil {
 			fmt.Println("Deliberation Error:", err)
-			os.Exit(ErrorDeliberating)
+			os.Exit(errorDeliberating)
 		}
 
 		desiredWidth, widthErr := strconv.Atoi(cmd.Flags().Lookup("width").Value.String())
@@ -241,7 +241,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		)
 		if formatterErr != nil {
 			fmt.Println("Formatter Error:", err)
-			os.Exit(ErrorFormatting)
+			os.Exit(errorFormatting)
 		}
 		fmt.Println(out)
 	},
@@ -260,8 +260,8 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.mj.yaml)")
-	//rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
+	rootCmd.PersistentFlags().StringVar(&configurationFilePath, "config", "", "config file (default is $HOME/.mj.yaml)")
+	//rootCmd.PersistentFlags().StringVar(&configurationFilePath, "config", "", "config file (default is $HOME/.cobra.yaml)")
 	rootCmd.Flags().StringP("format", "f", "text", "desired format of the output")
 	rootCmd.Flags().StringP("default", "d", "0", "default grade to use when unbalanced")
 	rootCmd.Flags().StringP("width", "w", "79", "desired width, in characters")
@@ -275,9 +275,9 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
+	if configurationFilePath != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		viper.SetConfigFile(configurationFilePath)
 	} else {
 		// Find home directory.
 		home, err := os.UserHomeDir()

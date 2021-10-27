@@ -9,8 +9,14 @@ import (
 	"strings"
 )
 
+// CsvTallyReader reads a poll's tally in a CSV like so:
+//     Nutriscore, G, F, E, D, C, B, A
+//          Pizza, 4, 2, 3, 4, 5, 4, 1
+//          Chips, 5, 3, 2, 4, 4, 3, 2
 type CsvTallyReader struct{}
 
+// Read the input CSV and return as much data as we can.
+// Read does not fill the `judgments` because they are not in a tally CSV
 func (r CsvTallyReader) Read(input *io.Reader) (
 	judgments [][]int,
 	tallies [][]float64,
@@ -80,7 +86,7 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 				proposals = append(proposals, strings.TrimSpace(row[0]))
 			} else {
 				j := len(proposals)
-				proposals = append(proposals, "Proposal "+Alphabet[j:j+1])
+				proposals = append(proposals, "Proposal "+alphabet[j:j+1])
 			}
 
 			// III.c Read the actual tallies
