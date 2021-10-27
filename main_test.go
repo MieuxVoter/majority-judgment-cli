@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"io"
 	"os"
 	"testing"
 )
@@ -85,4 +87,45 @@ func TestAll(t *testing.T) {
 			// Check stderr against tt.stderr
 		})
 	}
+}
+
+func BenchmarkBasicUsage(b *testing.B) {
+
+	for _, tt := range testData {
+		b.Run(tt.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				os.Args = []string{os.Args[0]}
+				os.Args = append(os.Args, tt.args...)
+
+				// Keep a backup of the real files.
+				oldStdOut := os.Stdout
+
+				// Let's use a pipe as buffer ( /!. pipes have limited buffer sizes /!. )
+				pipeReader, pipeWriter, _ := os.Pipe()
+				os.Stdout = pipeWriter
+
+				main()
+
+				outChan := make(chan string)
+				// copy the output in a separate goroutine so printing can't block indefinitely
+				go func() {
+					var buf bytes.Buffer
+					io.Copy(&buf, pipeReader)
+					outChan <- buf.String()
+				}()
+
+				// back to normal state
+				pipeWriter.Close()
+				os.Stdout = oldStdOut // restoring the real stdout
+				capturedOut := <-outChan
+
+				// dummy usage of capturedOut, since we need the <-outChan
+				for range capturedOut {
+					break
+				}
+
+			}
+		})
+	}
+
 }
