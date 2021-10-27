@@ -25,7 +25,7 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 	}
 
 	// II. Detect the shape/structure of the input file
-	hasGradesNamesRow, hasProposalNamesColumn := r.DetectShape(csvRows)
+	hasGradesNamesRow, hasProposalNamesColumn := r.detectShape(csvRows)
 
 	// III. Read the tallies, proposals, grades
 	for rowIndex, row := range csvRows {
@@ -79,7 +79,7 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 	return
 }
 
-func (r CsvTallyReader) DetectShape(rows [][]string) (hasGradesNamesRow bool, hasProposalNamesColumn bool) {
+func (r CsvTallyReader) detectShape(rows [][]string) (hasGradesNamesRow bool, hasProposalNamesColumn bool) {
 	hasGradesNamesRow = false
 	hasProposalNamesColumn = false
 
