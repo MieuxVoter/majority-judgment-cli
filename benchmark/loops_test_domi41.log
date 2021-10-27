@@ -1,0 +1,13 @@
+goos: linux
+goarch: amd64
+cpu: Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz
+BenchmarkRangeReadSliceByIndex-8                	    8845	    128883 ns/op
+BenchmarkRangeReadSliceByValue-8                	   14170	     86845 ns/op
+BenchmarkRangeWriteSlice-8                      	    8294	    149656 ns/op
+BenchmarkRangeReadAndWriteSlice-8               	    7885	    154031 ns/op
+BenchmarkForIterReadSlice-8                     	    9285	    131403 ns/op
+BenchmarkForIterWriteSlice-8                    	    8377	    151931 ns/op
+BenchmarkForIterReadAndWriteSlice-8             	    8504	    141878 ns/op
+BenchmarkDecreasingForIterReadAndWriteSlice-8   	    7491	    152724 ns/op
+PASS
+ok  	command-line-arguments	10.636s
