@@ -83,3 +83,11 @@ func GenerateDummyGradeNames(thatMany int) (grades []string, err error) {
 
 	return
 }
+
+func readFirstRune(str string) (first rune) {
+	for _, someRune := range str {
+		first = someRune
+		break
+	}
+	return
+}

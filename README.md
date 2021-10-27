@@ -18,10 +18,10 @@ Hand-made builds are provided in the [Assets of each Release](https://github.com
 
 Say you have a tally CSV like so:
 
-	     , reject, poor, fair, good, very good, excellent
-	Pizza,      3,    2,    1,    4,         4,        2
-	Chips,      2,    3,    0,    4,         3,        4
-	Pasta,      4,    5,    1,    4,         0,        2
+         , reject, poor, fair, good, very good, excellent
+    Pizza,      3,    2,    1,    4,         4,        2
+    Chips,      2,    3,    0,    4,         3,        4
+    Pasta,      4,    5,    1,    4,         0,        2
 
 You can run
 

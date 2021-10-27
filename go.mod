@@ -3,6 +3,7 @@ module github.com/MieuxVoter/majority-judgment-cli
 go 1.17
 
 require (
+	github.com/csimplestring/go-csv v0.0.0-20180328183906-5b8b3cd94f2c
 	github.com/mieuxvoter/majority-judgment-library-go v0.3.1
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0

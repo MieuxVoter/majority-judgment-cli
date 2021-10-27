@@ -3,6 +3,8 @@ package reader
 import (
 	"encoding/csv"
 	"errors"
+	"fmt"
+	"github.com/csimplestring/go-csv/detector"
 	"io"
 	"strings"
 )
@@ -16,9 +18,29 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 	grades []string,
 	err error,
 ) {
+	csvDelimiter := ',' // default value if our detector below fails
+	csvQuote := '"'
 
-	// I. Read the whole input at once.  Stream reading ?  Perhaps someday ?
-	csvRows, errReader := csv.NewReader(*input).ReadAll()
+	// I. Read the whole input at once.  Tried stream reading with io.Pipe but… buffer!
+	allData, _ := io.ReadAll(*input)
+	readerCloneA := strings.NewReader(string(allData))
+	readerCloneB := strings.NewReader(string(allData))
+
+	// I.a Detect the delimiter between values in the input (default is comma `,`)
+	delimiterDetector := detector.New()
+	delimiters := delimiterDetector.DetectDelimiter(readerCloneA, byte(csvQuote))
+	if 0 < len(delimiters) {
+		csvDelimiter = readFirstRune(delimiters[0])
+	}
+	if 1 < len(delimiters) {
+		err = fmt.Errorf("too many delimiters: found `%s` and `%s`", delimiters[0], delimiters[1])
+		return
+	}
+
+	// I.b Read the actual CSV contents
+	csvReader := csv.NewReader(readerCloneB)
+	csvReader.Comma = csvDelimiter
+	csvRows, errReader := csvReader.ReadAll()
 	if errReader != nil {
 		err = errors.New("Failed to read input CSV: " + errReader.Error())
 		return
@@ -70,11 +92,6 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 			tallies = append(tallies, proposalTallyOfFloats)
 		}
 	}
-
-	// Do we still need this?  Right now we should be ok.
-	//for gradeIndex, grade := range grades {
-	//	grades[gradeIndex] = strings.TrimSpace(grade)
-	//}
 
 	return
 }
