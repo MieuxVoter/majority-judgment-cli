@@ -88,11 +88,14 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		format := cmd.Flags().Lookup("format").Value.String()
 		defaultTo := cmd.Flags().Lookup("default").Value.String()
 		amountOfJudgesStr := cmd.Flags().Lookup("judges").Value.String()
+		chart := cmd.Flags().Lookup("chart").Value.String()
 
 		var outputFormatter formatter.Formatter
 		outputFormatter = &formatter.TextFormatter{}
 		if "text" == format || "txt" == format {
-			//outputFormatter = &formatter.TextFormatter{}
+			if "opinion" == chart {
+				outputFormatter = &formatter.TextOpinionFormatter{}
+			}
 		} else if "json" == format {
 			outputFormatter = &formatter.JsonFormatter{}
 		} else if "csv" == format {
@@ -100,7 +103,6 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		} else if "yml" == format || "yaml" == format {
 			outputFormatter = &formatter.YamlFormatter{}
 		} else if "gnuplot" == format || "plot" == format {
-			chart := cmd.Flags().Lookup("chart").Value.String()
 			if "merit" == chart {
 				outputFormatter = &formatter.GnuplotMeritFormatter{}
 			} else if "opinion" == chart {

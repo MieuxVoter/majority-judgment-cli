@@ -80,11 +80,11 @@ func (t *TextFormatter) Format(
 		if 0 < gradeIndex {
 			out += "  "
 		}
-		out += fmt.Sprintf("%s=%s", getCharForGrade(gradeIndex), gradeName)
+		out += fmt.Sprintf("%s=%s", getCharForIndex(gradeIndex), gradeName)
 	}
-	out += "\n"
+	//out += "\n"
 
-	return strings.TrimSpace(out), nil
+	return out, nil
 }
 
 func countDigits(i int) (count int) {
@@ -106,7 +106,7 @@ func makeAsciiMeritProfile(
 	amountOfJudges := float64(tally.CountJudgments())
 	for gradeIndex, gradeTallyInt := range tally.Tally {
 		gradeTally := float64(gradeTallyInt)
-		gradeRune := getCharForGrade(gradeIndex)
+		gradeRune := getCharForIndex(gradeIndex)
 		ascii += strings.Repeat(
 			gradeRune,
 			int(math.Round(float64(width)*gradeTally/amountOfJudges)),
@@ -126,7 +126,7 @@ func makeAsciiMeritProfile(
 	return
 }
 
-func getCharForGrade(gradeIndex int) string {
+func getCharForIndex(gradeIndex int) string {
 	const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	gradeIndex = gradeIndex % len(chars)
 	return chars[gradeIndex : gradeIndex+1]
