@@ -25,8 +25,8 @@ func (t *TextFormatter) Format(
 	out := ""
 
 	expectedWidth := options.Width
-	if 0 >= expectedWidth {
-		expectedWidth = 79
+	if expectedWidth <= 0 {
+		expectedWidth = defaultWidth
 	}
 
 	proposalsResults := result.Proposals

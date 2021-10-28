@@ -10,6 +10,8 @@ type Options struct {
 	Scale  float64 // so we can use integers internally, and display floats
 }
 
+const defaultWidth = 79
+
 // Formatter to implement to make another formatter
 // Keep in mind you need to add it to the "if else if" in root command as well
 type Formatter interface {
