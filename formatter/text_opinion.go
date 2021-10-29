@@ -31,50 +31,43 @@ func (t *TextOpinionFormatter) Format(
 	}
 
 	proposalsTallies := pollTally.Proposals
+	// → sort them as well?
 
-	biggestRank := 1
-	for _, proposalResult := range proposalsResults {
-		if biggestRank < proposalResult.Rank {
-			biggestRank = proposalResult.Rank
-		}
-	}
-	//amountOfDigitsForRank := countDigits(biggestRank)
-
-	amountOfCharactersForProposal := 1
-	maximumAmountOfCharactersForProposal := 30
+	amountOfCharactersForProposalName := 1
+	amountOfCharactersForProposalNameThreshold := 30
 	for _, proposal := range proposals {
 		thatProposalLength := measureStringLength(proposal)
-		if thatProposalLength > amountOfCharactersForProposal {
-			amountOfCharactersForProposal = thatProposalLength
+		if thatProposalLength > amountOfCharactersForProposalName {
+			amountOfCharactersForProposalName = thatProposalLength
 		}
 	}
-	if amountOfCharactersForProposal > maximumAmountOfCharactersForProposal {
-		amountOfCharactersForProposal = maximumAmountOfCharactersForProposal
+	if amountOfCharactersForProposalName > amountOfCharactersForProposalNameThreshold {
+		amountOfCharactersForProposalName = amountOfCharactersForProposalNameThreshold
 	}
 
 	amountOfCharactersForGrade := 1
-	maximumAmountOfCharactersForGrade := 20
+	amountOfCharactersForGradeThreshold := 20
 	for _, grade := range grades {
 		thatGradeLength := measureStringLength(grade)
 		if thatGradeLength > amountOfCharactersForGrade {
 			amountOfCharactersForGrade = thatGradeLength
 		}
 	}
-	if amountOfCharactersForGrade > maximumAmountOfCharactersForGrade {
-		amountOfCharactersForGrade = maximumAmountOfCharactersForGrade
+	if amountOfCharactersForGrade > amountOfCharactersForGradeThreshold {
+		amountOfCharactersForGrade = amountOfCharactersForGradeThreshold
 	}
 
 	maximumAmountOfJudgmentsForGrade := uint64(0)
 	for gradeIndex := range grades {
 		cumulatedAmountOfJudgmentsForGrade := uint64(0)
 		for _, proposalTally := range proposalsTallies {
-			cumulatedAmountOfJudgmentsForGrade += proposalTally.Tally[gradeIndex]
+			cumulatedAmountOfJudgmentsForGrade += proposalTally.Tally[gradeIndex] // * uint64(options.Scale)
 		}
 		if cumulatedAmountOfJudgmentsForGrade > maximumAmountOfJudgmentsForGrade {
 			maximumAmountOfJudgmentsForGrade = cumulatedAmountOfJudgmentsForGrade
 		}
 	}
-	amountOfCharactersForTotal := countDigits(maximumAmountOfCharactersForGrade)
+	amountOfCharactersForTotal := countDigits(int(maximumAmountOfJudgmentsForGrade))
 
 	chartWidth := 0
 	tableWidth := 0
@@ -85,7 +78,12 @@ func (t *TextOpinionFormatter) Format(
 			cumulatedAmountOfJudgmentsForGrade += proposalTally.Tally[gradeIndex]
 		}
 
-		line := fmt.Sprintf("%*d ", amountOfCharactersForTotal, cumulatedAmountOfJudgmentsForGrade)
+		line := ""
+		if options.Scale == 1.0 {
+			line += fmt.Sprintf("%*d ", amountOfCharactersForTotal, cumulatedAmountOfJudgmentsForGrade)
+		} else {
+			line += fmt.Sprintf("%*.2f ", amountOfCharactersForTotal, float64(cumulatedAmountOfJudgmentsForGrade)/options.Scale)
+		}
 
 		line += fmt.Sprintf("%*s ", amountOfCharactersForGrade, truncateString(
 			gradeName,
@@ -121,18 +119,6 @@ func (t *TextOpinionFormatter) Format(
 
 	out += "\n"
 	out += makeTextLegend("Legend:", legendDefinitions, tableWidth, expectedWidth)
-
-	//out += "\n   Legend:  "
-	//for proposalIndex, proposalResult := range proposalsResults {
-	//	if proposalIndex > 0 {
-	//		out += "  "
-	//	}
-	//	out += fmt.Sprintf(
-	//		"%s=%s",
-	//		getCharForIndex(proposalResult.Index),
-	//		proposals[proposalResult.Index],
-	//	)
-	//}
 
 	return out, nil
 }
