@@ -88,12 +88,32 @@ func (t *TextFormatter) Format(
 	}
 
 	out += "\n"
-	out += makeLegend("Legend:", legendDefinitions, tableWidth, expectedWidth)
+	out += makeTextLegend("Legend:", legendDefinitions, tableWidth, expectedWidth)
 
 	return out, nil
 }
 
-func makeLegend(title string, definitions []string, indentation int, maxWidth int) (legend string) {
+// countDigits returns 1 for 0, 1 for 5, 3 for 421, 3 for -42
+func countDigits(i int) (count int) {
+	if i < 0 {
+		count = countDigits(i * -1)
+		return
+	}
+	if i == 0 {
+		count = 1
+		return
+	}
+	for i > 0 {
+		i = i / 10 // Euclid wuz hear
+		count++
+	}
+
+	return
+}
+
+// makeTextLegend makes a legend for an ASCII chart
+// `title` should be shorter than `indentation` characters
+func makeTextLegend(title string, definitions []string, indentation int, maxWidth int) (legend string) {
 	line := ""
 	leftOnLine := maxWidth
 	for i, def := range definitions {
@@ -112,17 +132,8 @@ func makeLegend(title string, definitions []string, indentation int, maxWidth in
 		leftOnLine -= needed
 	}
 	if strings.TrimSpace(line) != "" {
-		legend += line + "\n"
+		legend += line
 	}
-	return
-}
-
-func countDigits(i int) (count int) {
-	for i > 0 {
-		i = i / 10 // Euclid wuz hear
-		count++
-	}
-
 	return
 }
 
@@ -157,7 +168,7 @@ func makeAsciiMeritProfile(
 }
 
 func getCharForIndex(gradeIndex int) string {
-	const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	gradeIndex = gradeIndex % len(chars)
 	return chars[gradeIndex : gradeIndex+1]
 }

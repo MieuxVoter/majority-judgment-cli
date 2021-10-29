@@ -120,7 +120,7 @@ func (t *TextOpinionFormatter) Format(
 	}
 
 	out += "\n"
-	out += makeLegend("Legend:", legendDefinitions, tableWidth, expectedWidth)
+	out += makeTextLegend("Legend:", legendDefinitions, tableWidth, expectedWidth)
 
 	//out += "\n   Legend:  "
 	//for proposalIndex, proposalResult := range proposalsResults {
