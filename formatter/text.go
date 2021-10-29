@@ -54,6 +54,8 @@ func (t *TextFormatter) Format(
 		amountOfCharactersForProposal = maximumAmountOfCharactersForProposal
 	}
 
+	chartWidth := 0
+	tableWidth := 0
 	for _, proposalResult := range proposalsResults {
 		line := fmt.Sprintf(
 			"#%0"+strconv.Itoa(amountOfDigitsForRank)+"d  ",
@@ -65,26 +67,54 @@ func (t *TextFormatter) Format(
 			truncateString(proposals[proposalResult.Index], amountOfCharactersForProposal, '…'),
 		)
 
-		remainingWidth := expectedWidth - measureStringLength(line)
+		tableWidth = measureStringLength(line)
+		remainingWidth := expectedWidth - tableWidth
+		chartWidth = remainingWidth
 
 		line += makeAsciiMeritProfile(
 			pollTally.Proposals[proposalResult.Index],
-			remainingWidth,
+			chartWidth,
 		)
 
 		out += line + "\n"
 	}
 
-	out += "\n   Legend:  "
+	legendDefinitions := make([]string, 0, 16)
 	for gradeIndex, gradeName := range grades {
-		if 0 < gradeIndex {
-			out += "  "
-		}
-		out += fmt.Sprintf("%s=%s", getCharForIndex(gradeIndex), gradeName)
+		legendDefinitions = append(
+			legendDefinitions,
+			fmt.Sprintf("%s=%s", getCharForIndex(gradeIndex), gradeName),
+		)
 	}
-	//out += "\n"
+
+	out += "\n"
+	out += makeLegend("Legend:", legendDefinitions, tableWidth, expectedWidth)
 
 	return out, nil
+}
+
+func makeLegend(title string, definitions []string, indentation int, maxWidth int) (legend string) {
+	line := ""
+	leftOnLine := maxWidth
+	for i, def := range definitions {
+		if i == 0 {
+			line += fmt.Sprintf("%*s", indentation-1, title)
+			leftOnLine -= indentation - 1
+		}
+		needed := measureStringLength(def) + 1
+		if needed > leftOnLine && i > 0 {
+			legend += line + "\n"
+			line = ""
+			line += strings.Repeat(" ", indentation-1)
+			leftOnLine = maxWidth - indentation - 1
+		}
+		line += fmt.Sprintf(" %s", def)
+		leftOnLine -= needed
+	}
+	if strings.TrimSpace(line) != "" {
+		legend += line + "\n"
+	}
+	return
 }
 
 func countDigits(i int) (count int) {

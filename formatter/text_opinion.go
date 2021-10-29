@@ -76,6 +76,8 @@ func (t *TextOpinionFormatter) Format(
 	}
 	amountOfCharactersForTotal := countDigits(maximumAmountOfCharactersForGrade)
 
+	chartWidth := 0
+	tableWidth := 0
 	for gradeIndex, gradeName := range grades {
 
 		cumulatedAmountOfJudgmentsForGrade := uint64(0)
@@ -91,29 +93,46 @@ func (t *TextOpinionFormatter) Format(
 			'…',
 		))
 
-		remainingWidth := expectedWidth - measureStringLength(line)
+		tableWidth = measureStringLength(line)
+		remainingWidth := expectedWidth - tableWidth
+		chartWidth = remainingWidth
 
 		line += makeAsciiOpinionProfile(
 			proposalsTallies,
 			gradeIndex,
 			maximumAmountOfJudgmentsForGrade,
-			remainingWidth,
+			chartWidth,
 		)
 
 		out += line + "\n"
 	}
 
-	out += "\n   Legend:  "
-	for proposalIndex, proposalResult := range proposalsResults {
-		if proposalIndex > 0 {
-			out += "  "
-		}
-		out += fmt.Sprintf(
-			"%s=%s",
-			getCharForIndex(proposalResult.Index),
-			proposals[proposalResult.Index],
+	legendDefinitions := make([]string, 0, 16)
+	for _, proposalResult := range proposalsResults {
+		legendDefinitions = append(
+			legendDefinitions,
+			fmt.Sprintf(
+				"%s=%s",
+				getCharForIndex(proposalResult.Index),
+				proposals[proposalResult.Index],
+			),
 		)
 	}
+
+	out += "\n"
+	out += makeLegend("Legend:", legendDefinitions, tableWidth, expectedWidth)
+
+	//out += "\n   Legend:  "
+	//for proposalIndex, proposalResult := range proposalsResults {
+	//	if proposalIndex > 0 {
+	//		out += "  "
+	//	}
+	//	out += fmt.Sprintf(
+	//		"%s=%s",
+	//		getCharForIndex(proposalResult.Index),
+	//		proposals[proposalResult.Index],
+	//	)
+	//}
 
 	return out, nil
 }
