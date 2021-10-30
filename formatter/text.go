@@ -83,7 +83,7 @@ func (t *TextFormatter) Format(
 	for gradeIndex, gradeName := range grades {
 		legendDefinitions = append(
 			legendDefinitions,
-			fmt.Sprintf("%s=%s", getCharForIndex(gradeIndex), gradeName),
+			fmt.Sprintf("%s=%s", getCharForIndex(gradeIndex), truncateString(gradeName, chartWidth-3, '…')),
 		)
 	}
 
@@ -147,9 +147,9 @@ func makeAsciiMeritProfile(
 	amountOfJudges := float64(tally.CountJudgments())
 	for gradeIndex, gradeTallyInt := range tally.Tally {
 		gradeTally := float64(gradeTallyInt)
-		gradeRune := getCharForIndex(gradeIndex)
+		gradeChar := getCharForIndex(gradeIndex)
 		ascii += strings.Repeat(
-			gradeRune,
+			gradeChar,
 			int(math.Round(float64(width)*gradeTally/amountOfJudges)),
 		)
 	}

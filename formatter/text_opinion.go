@@ -112,7 +112,7 @@ func (t *TextOpinionFormatter) Format(
 			fmt.Sprintf(
 				"%s=%s",
 				getCharForIndex(proposalResult.Index),
-				proposals[proposalResult.Index],
+				truncateString(proposals[proposalResult.Index], chartWidth-2, '…'),
 			),
 		)
 	}
