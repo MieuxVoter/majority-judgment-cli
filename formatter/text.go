@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const minimumDefinitionLength = 7
+
 // TextFormatter is the default formatter.
 // It displays the proposals with their merit profiles and ranks.
 // It does not use color (yet).  ANSI colors are appalling.
@@ -81,9 +83,17 @@ func (t *TextFormatter) Format(
 
 	legendDefinitions := make([]string, 0, 16)
 	for gradeIndex, gradeName := range grades {
+		maximumDefinitionLength := chartWidth - 2
+		if maximumDefinitionLength < minimumDefinitionLength {
+			maximumDefinitionLength = minimumDefinitionLength
+		}
 		legendDefinitions = append(
 			legendDefinitions,
-			fmt.Sprintf("%s=%s", getCharForIndex(gradeIndex), truncateString(gradeName, chartWidth-3, '…')),
+			fmt.Sprintf(
+				"%s=%s",
+				getCharForIndex(gradeIndex),
+				truncateString(gradeName, maximumDefinitionLength, '…'),
+			),
 		)
 	}
 

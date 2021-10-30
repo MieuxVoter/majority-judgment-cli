@@ -107,12 +107,16 @@ func (t *TextOpinionFormatter) Format(
 
 	legendDefinitions := make([]string, 0, 16)
 	for _, proposalResult := range proposalsResults {
+		maximumDefinitionLength := chartWidth - 2
+		if maximumDefinitionLength < minimumDefinitionLength {
+			maximumDefinitionLength = minimumDefinitionLength
+		}
 		legendDefinitions = append(
 			legendDefinitions,
 			fmt.Sprintf(
 				"%s=%s",
 				getCharForIndex(proposalResult.Index),
-				truncateString(proposals[proposalResult.Index], chartWidth-2, '…'),
+				truncateString(proposals[proposalResult.Index], maximumDefinitionLength, '…'),
 			),
 		)
 	}
@@ -135,14 +139,28 @@ func makeAsciiOpinionProfile(
 
 	widthFloat := float64(width)
 	maximumValueFloat := float64(maximumValue)
+	cumul := 0.0
 	for proposalIndex, proposalTally := range tallies {
 		gradeTallyInt := proposalTally.Tally[gradeIndex]
 		gradeTally := float64(gradeTallyInt)
 		proposalChar := getCharForIndex(proposalIndex)
+		amountOfCharsFloat := widthFloat*(gradeTally)/maximumValueFloat + cumul
+		amountOfChars := int(math.Round(amountOfCharsFloat))
+		if amountOfCharsFloat > 0.0 {
+			if amountOfChars == 0 {
+				cumul = amountOfCharsFloat
+			} else {
+				cumul = 0
+			}
+		}
 		ascii += strings.Repeat(
 			proposalChar,
-			int(math.Round(widthFloat*gradeTally/maximumValueFloat)),
+			amountOfChars,
 		)
+	}
+
+	for len(ascii) > width {
+		ascii = ascii[0 : len(ascii)-1]
 	}
 
 	return
