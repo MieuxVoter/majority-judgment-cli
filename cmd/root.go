@@ -47,7 +47,7 @@ var rootCmd = &cobra.Command{
 	Short:   "Resolve and inspect Majority Judgment polls",
 	Long: `Resolve Majority Judgment polls from an input CSV.
 
-Say you have the following tally in a CSV file named example.csv:
+Say you have the following tally in a CSV (or TSV) file named example.csv:
 
          , reject, poor, fair, good, very good, excellent
     Pizza,      3,    2,    1,    4,         4,        2
@@ -58,7 +58,7 @@ You could run:
 
 	mj example.csv
 
-or
+or use - to read from stdin:
 
 	cat example.csv | mj -
 
@@ -66,7 +66,7 @@ You probably want to sort the proposals by rank, as well:
 
 	mj example.csv --sort
 
-Get different formats as output:
+You can get different formats as output:
 
 	mj example.csv --format json
 	mj example.csv --format yml
@@ -77,6 +77,8 @@ Get different formats as output:
 Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 
 	mj example.csv --sort --format gnuplot | gnuplot
+
+The --width parameter only applies to the default format (text).
 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -89,6 +91,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		defaultTo := cmd.Flags().Lookup("default").Value.String()
 		amountOfJudgesStr := cmd.Flags().Lookup("judges").Value.String()
 		chart := cmd.Flags().Lookup("chart").Value.String()
+		normalize := cmd.Flags().Lookup("normalize").Changed
 
 		var outputFormatter formatter.Formatter
 		outputFormatter = &formatter.TextFormatter{}
@@ -133,6 +136,7 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 			if errOpen != nil {
 				fmt.Println(errOpen)
 			}
+			// a bit nasty ; should we just defer close() and ignore err?
 			defer func(csvFile *os.File) {
 				errClosing := csvFile.Close()
 				if errClosing != nil {
@@ -150,6 +154,18 @@ Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 		if errReader != nil {
 			fmt.Printf("Failed to read input: " + errReader.Error() + "\n")
 			os.Exit(errorReading)
+		}
+
+		if normalize {
+			for proposalTallyIndex, proposalTallyAsFloats := range tallies {
+				proposalTotal := 0.0
+				for _, gradeTallyAsFloat := range proposalTallyAsFloats {
+					proposalTotal += gradeTallyAsFloat
+				}
+				for gradeIndex, gradeTallyAsFloat := range proposalTallyAsFloats {
+					tallies[proposalTallyIndex][gradeIndex] = gradeTallyAsFloat * 100.0 / proposalTotal
+				}
+			}
 		}
 
 		maximumPrecisionScale := 1000000.0
@@ -272,7 +288,8 @@ func init() {
 	rootCmd.Flags().Int64P("judges", "j", 0, "amount of judges participating (overrides our guess)")
 	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
-	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by Rank")
+	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by their rank")
+	rootCmd.Flags().BoolP("normalize", "n", false, "normalize input to balance proposal participation")
 	rootCmd.SetVersionTemplate("{{.Version}}\n" + version.BuildDate + "\n")
 }
 
