@@ -73,6 +73,10 @@ func (t *TextFormatter) Format(
 		remainingWidth := expectedWidth - tableWidth
 		chartWidth = remainingWidth
 
+		if chartWidth%2 == 0 {
+			chartWidth--
+		}
+
 		line += makeAsciiMeritProfile(
 			pollTally.Proposals[proposalResult.Index],
 			chartWidth,
