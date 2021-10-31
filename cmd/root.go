@@ -91,6 +91,7 @@ The --width parameter only applies to the default format (text).
 		defaultTo := cmd.Flags().Lookup("default").Value.String()
 		amountOfJudgesStr := cmd.Flags().Lookup("judges").Value.String()
 		chart := cmd.Flags().Lookup("chart").Value.String()
+		normalize := cmd.Flags().Lookup("normalize").Changed
 
 		var outputFormatter formatter.Formatter
 		outputFormatter = &formatter.TextFormatter{}
@@ -153,6 +154,18 @@ The --width parameter only applies to the default format (text).
 		if errReader != nil {
 			fmt.Printf("Failed to read input: " + errReader.Error() + "\n")
 			os.Exit(errorReading)
+		}
+
+		if normalize {
+			for proposalTallyIndex, proposalTallyAsFloats := range tallies {
+				proposalTotal := 0.0
+				for _, gradeTallyAsFloat := range proposalTallyAsFloats {
+					proposalTotal += gradeTallyAsFloat
+				}
+				for gradeIndex, gradeTallyAsFloat := range proposalTallyAsFloats {
+					tallies[proposalTallyIndex][gradeIndex] = gradeTallyAsFloat * 100.0 / proposalTotal
+				}
+			}
 		}
 
 		maximumPrecisionScale := 1000000.0
@@ -275,7 +288,8 @@ func init() {
 	rootCmd.Flags().Int64P("judges", "j", 0, "amount of judges participating (overrides our guess)")
 	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
-	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by Rank")
+	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by their rank")
+	rootCmd.Flags().BoolP("normalize", "n", false, "normalize input to balance proposal participation")
 	rootCmd.SetVersionTemplate("{{.Version}}\n" + version.BuildDate + "\n")
 }
 
