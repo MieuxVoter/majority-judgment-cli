@@ -24,21 +24,20 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 	grades []string,
 	err error,
 ) {
-	csvDelimiter := ',' // default value if our detector below fails
+	csvDelimiter := ' ' // default value if our detector below fails
 	csvQuote := '"'
 
 	// I. Read the whole input at once.  Tried stream reading with io.Pipe but… buffer!
-	allData, _ := io.ReadAll(*input)
-	readerCloneA := strings.NewReader(string(allData))
-	readerCloneB := strings.NewReader(SanitizeInput(string(allData)))
+	allDataBytes, _ := io.ReadAll(*input)
+	allData := sanitizeInput(string(allDataBytes))
+	inputReaderForMeta := strings.NewReader(allData)
+	inputReaderForData := strings.NewReader(allData)
 
 	// I.a Detect the delimiter between values in the input (default is comma `,`)
 	delimiterDetector := detector.New()
-	delimiters := delimiterDetector.DetectDelimiter(readerCloneA, byte(csvQuote))
+	delimiters := delimiterDetector.DetectDelimiter(inputReaderForMeta, byte(csvQuote))
 	if 0 < len(delimiters) {
 		csvDelimiter = readFirstRune(delimiters[0])
-	} else {
-		csvDelimiter = ' ' // fallback on space -- use another detector instead of this
 	}
 	if 1 < len(delimiters) {
 		err = fmt.Errorf("too many delimiters: found `%s` and `%s`", delimiters[0], delimiters[1])
@@ -46,7 +45,7 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 	}
 
 	// I.b Read the actual CSV contents
-	csvReader := csv.NewReader(readerCloneB)
+	csvReader := csv.NewReader(inputReaderForData)
 	csvReader.Comma = csvDelimiter
 	csvRows, errReader := csvReader.ReadAll()
 	if errReader != nil {

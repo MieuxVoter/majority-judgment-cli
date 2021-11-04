@@ -24,8 +24,8 @@ type Reader interface {
 	)
 }
 
-// SanitizeInput to help readers
-func SanitizeInput(input string) string {
+// sanitizeInput to help readers
+func sanitizeInput(input string) string {
 	sanitized := input // inefficient, but makes code below more modular — TBD
 
 	// Remove duplicate spaces
