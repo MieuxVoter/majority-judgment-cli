@@ -14,6 +14,7 @@ Resolve Majority Judgment polls and compute the rank of each proposal.
 
 Hand-made builds for _Windows_ and _Linux/Mac_ are provided in the [Assets of each Release](https://github.com/MieuxVoter/majority-judgment-cli/releases).
 
+> Remember to enable the execution bit: `chmod u+x ./mj`
 
 ## Usage
 
@@ -37,7 +38,7 @@ and get
     Legend:  0=reject  1=poor  2=fair  3=good  4=very good  5=excellent
 
 
-You probably want to `--sort` the proposals as well:
+You probably want to `--sort` the proposals by their rank as well:
 
     #1   Chips 000000001111111111111333333333333|333344444444444445555555555555555
     #2   Pizza 000000000000011111111222233333333|333333334444444444444444455555555
@@ -47,7 +48,7 @@ You probably want to `--sort` the proposals as well:
 
 or use `-` to read from `stdin`:
 
-    cat example.csv | mj -
+    cat example.csv | mj - --sort
 
 
 ### Balancing
@@ -75,7 +76,7 @@ You can specify the format of the output:
 
 And even format [gnuplot](http://www.gnuplot.info/) scripts that render charts:
 
-    ./mj example.csv --format gnuplot | gnuplot
+    ./mj example.csv --sort --format gnuplot | gnuplot
 
 ![Linear merit profiles okf the proposals of a poll](example/screenshot_merit.png)
 
@@ -89,7 +90,7 @@ Available charts:
 - [x] `merit` (default)
 - [x] `opinion`
 - [ ] …
-- [ ] a LOT more would be possible with more detailed data, per participant
+- [ ] a LOT more would be possible with ballot data per participant
 
 
 ## Install
