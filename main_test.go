@@ -57,6 +57,12 @@ var testData = []struct {
 		},
 	},
 	{
+		name: "Basic usage, example11.ssv",
+		args: []string{
+			"example/example11.ssv",
+		},
+	},
+	{
 		name: "--sort usage, example.csv",
 		args: []string{
 			"example/example.csv",

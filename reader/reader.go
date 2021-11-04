@@ -3,6 +3,7 @@ package reader
 import (
 	"fmt"
 	"io"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -21,6 +22,18 @@ type Reader interface {
 		grades []string, // from "worst" to "best", just like in tally above
 		err error,
 	)
+}
+
+// SanitizeInput to help readers
+func SanitizeInput(input string) string {
+	sanitized := input // inefficient, but makes code below more modular — TBD
+
+	// Remove duplicate spaces
+	sanitized = regexp.MustCompile(` +`).ReplaceAllString(sanitized, " ")
+
+	// …
+
+	return sanitized
 }
 
 // ReadTallyRow reads a proposal tally row from strings

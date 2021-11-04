@@ -16,7 +16,7 @@ import (
 type CsvTallyReader struct{}
 
 // Read the input CSV and return as much data as we can.
-// Read does not fill the `judgments` because they are not in a tally CSV
+// Read does not fill the `judgments` because this data is absent from the profiles.
 func (r CsvTallyReader) Read(input *io.Reader) (
 	judgments [][]int,
 	tallies [][]float64,
@@ -30,13 +30,15 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 	// I. Read the whole input at once.  Tried stream reading with io.Pipe but… buffer!
 	allData, _ := io.ReadAll(*input)
 	readerCloneA := strings.NewReader(string(allData))
-	readerCloneB := strings.NewReader(string(allData))
+	readerCloneB := strings.NewReader(SanitizeInput(string(allData)))
 
 	// I.a Detect the delimiter between values in the input (default is comma `,`)
 	delimiterDetector := detector.New()
 	delimiters := delimiterDetector.DetectDelimiter(readerCloneA, byte(csvQuote))
 	if 0 < len(delimiters) {
 		csvDelimiter = readFirstRune(delimiters[0])
+	} else {
+		csvDelimiter = ' ' // fallback on space -- use another detector instead of this
 	}
 	if 1 < len(delimiters) {
 		err = fmt.Errorf("too many delimiters: found `%s` and `%s`", delimiters[0], delimiters[1])
