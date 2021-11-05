@@ -71,7 +71,11 @@ func ReadNamesRow(row []string, skipFirst bool) (names []string) {
 
 // ReadNumber reads the number from the input string.
 func ReadNumber(s string) (n float64, err error) {
-	return strconv.ParseFloat(strings.TrimSpace(s), 64)
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0.0, nil
+	}
+	return strconv.ParseFloat(s, 64)
 }
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
