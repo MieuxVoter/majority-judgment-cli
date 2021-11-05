@@ -234,8 +234,8 @@ The --width parameter only applies to the default format (text).
 			os.Exit(errorBalancing)
 		}
 
-		deliberator := &judgment.MajorityJudgment{}
-		result, deliberationErr := deliberator.Deliberate(poll)
+		mj := &judgment.MajorityJudgment{}
+		result, deliberationErr := mj.Deliberate(poll)
 		if deliberationErr != nil {
 			fmt.Println("Deliberation Error:", deliberationErr)
 			os.Exit(errorDeliberating)
@@ -246,9 +246,10 @@ The --width parameter only applies to the default format (text).
 			desiredWidth = 79
 		}
 		options := &formatter.Options{
-			Sorted: cmd.Flags().Lookup("sort").Changed,
-			Width:  desiredWidth,
-			Scale:  precisionScale,
+			Colorized: !cmd.Flags().Lookup("no-color").Changed,
+			Scale:     precisionScale,
+			Sorted:    cmd.Flags().Lookup("sort").Changed,
+			Width:     desiredWidth,
 		}
 
 		out, formatterErr := outputFormatter.Format(
@@ -290,6 +291,7 @@ func init() {
 	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
 	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by their rank")
 	rootCmd.Flags().BoolP("normalize", "n", false, "normalize input to balance proposal participation")
+	rootCmd.Flags().Bool("no-color", false, "do not use colors in the text outputs")
 	rootCmd.SetVersionTemplate("{{.Version}}\n" + version.BuildDate + "\n")
 }
 

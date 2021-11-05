@@ -5,9 +5,10 @@ import "github.com/mieuxvoter/majority-judgment-library-go/judgment"
 // Options are shared between all formatters.
 // Some formatters may ignore some options.
 type Options struct {
-	Sorted bool
-	Width  int
-	Scale  float64 // so we can use integers internally, and display floats
+	Colorized bool
+	Scale     float64 // so we can use integers internally, and display floats
+	Sorted    bool
+	Width     int
 }
 
 const defaultWidth = 79

@@ -2,8 +2,10 @@ package formatter
 
 import (
 	"fmt"
+	"github.com/acarl005/stripansi"
 	"github.com/mieuxvoter/majority-judgment-library-go/judgment"
-	"math"
+	"github.com/muesli/termenv"
+
 	"strconv"
 	"strings"
 )
@@ -30,6 +32,10 @@ func (t *TextFormatter) Format(
 	if expectedWidth <= 0 {
 		expectedWidth = defaultWidth
 	}
+
+	colorized := options.Colorized
+	palette := judgment.CreateDefaultPalette(len(grades))
+	colorProfile := termenv.ColorProfile()
 
 	proposalsResults := result.Proposals
 	if options.Sorted {
@@ -80,6 +86,7 @@ func (t *TextFormatter) Format(
 		line += makeAsciiMeritProfile(
 			pollTally.Proposals[proposalResult.Index],
 			chartWidth,
+			colorized,
 		)
 
 		out += line + "\n"
@@ -91,11 +98,19 @@ func (t *TextFormatter) Format(
 		if maximumDefinitionLength < minimumDefinitionLength {
 			maximumDefinitionLength = minimumDefinitionLength
 		}
+		gradeChar := getCharForIndex(gradeIndex)
+		if colorized {
+			color := colorProfile.FromColor(palette[gradeIndex])
+			s := termenv.String(gradeChar)
+			s = s.Background(color)
+			s = s.Foreground(color)
+			gradeChar = s.String()
+		}
 		legendDefinitions = append(
 			legendDefinitions,
 			fmt.Sprintf(
 				"%s=%s",
-				getCharForIndex(gradeIndex),
+				gradeChar,
 				truncateString(gradeName, maximumDefinitionLength, '…'),
 			),
 		)
@@ -127,7 +142,12 @@ func countDigits(i int) (count int) {
 
 // makeTextLegend makes a legend for an ASCII chart
 // `title` should be shorter than `indentation` characters
-func makeTextLegend(title string, definitions []string, indentation int, maxWidth int) (legend string) {
+func makeTextLegend(
+	title string,
+	definitions []string,
+	indentation int,
+	maxWidth int,
+) (legend string) {
 	line := ""
 	leftOnLine := maxWidth
 	for i, def := range definitions {
@@ -135,7 +155,7 @@ func makeTextLegend(title string, definitions []string, indentation int, maxWidt
 			line += fmt.Sprintf("%*s", indentation-1, title)
 			leftOnLine -= indentation - 1
 		}
-		needed := measureStringLength(def) + 1
+		needed := measureStringLength(stripansi.Strip(def)) + 1
 		if needed > leftOnLine && i > 0 {
 			legend += line + "\n"
 			line = ""
@@ -154,31 +174,58 @@ func makeTextLegend(title string, definitions []string, indentation int, maxWidt
 func makeAsciiMeritProfile(
 	tally *judgment.ProposalTally,
 	width int,
+	colorized bool,
 ) (ascii string) {
 	if width < 3 {
 		width = 3
 	}
-	amountOfJudges := float64(tally.CountJudgments())
-	for gradeIndex, gradeTallyInt := range tally.Tally {
-		gradeTally := float64(gradeTallyInt)
+	palette := judgment.CreateDefaultPalette(int(tally.CountAvailableGrades()))
+	colorProfile := termenv.ColorProfile()
+
+	for cursor := 0; cursor < width; cursor++ {
+		ratio := float64(cursor) / float64(width)
+		gradeIndex, _ := getGradeAtRatio(tally, ratio)
 		gradeChar := getCharForIndex(gradeIndex)
-		ascii += strings.Repeat(
-			gradeChar,
-			int(math.Round(float64(width)*gradeTally/amountOfJudges)),
-		)
-	}
+		isMedian := (width)/2 == cursor
+		if isMedian {
+			gradeChar = "|"
+		}
 
-	for len(ascii) < width {
-		ascii += ascii[len(ascii)-1:]
+		if colorized {
+			color := colorProfile.FromColor(palette[gradeIndex])
+			s := termenv.String(gradeChar)
+			s = s.Background(color)
+			if !isMedian {
+				s = s.Foreground(color)
+			}
+			gradeChar = s.String()
+		}
+		ascii += gradeChar
 	}
-
-	for len(ascii) > width {
-		ascii = ascii[0 : len(ascii)-1]
-	}
-
-	ascii = replaceAtIndex(ascii, '|', width/2)
 
 	return
+}
+
+func getGradeAtRatio(
+	tally *judgment.ProposalTally,
+	ratio float64,
+) (int, error) {
+	targetIndex := int(ratio * float64(tally.CountJudgments()))
+	cursorStart := 0
+	cursor := 0
+	for gradeIndex, gradeTallyInt := range tally.Tally {
+		if 0 == gradeTallyInt {
+			continue
+		}
+		cursorStart = cursor
+		cursor = cursor + int(gradeTallyInt)
+
+		if cursorStart <= targetIndex && targetIndex < cursor {
+			return gradeIndex, nil
+		}
+	}
+
+	return 0, fmt.Errorf("")
 }
 
 func getCharForIndex(gradeIndex int) string {
