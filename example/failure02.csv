@@ -1,0 +1,4 @@
+     , reject, poor, fair, good, very good, excellent
+Pizza,      3,    2,    1,    4,         4,        2
+Chips,      2,    3,    0,    4,         3
+Pasta,      4,    5,    1,    4,         0,        1
