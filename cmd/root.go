@@ -153,7 +153,7 @@ The --width parameter only applies to the default format (text).
 
 		var tallyReader reader.Reader
 
-		tallyReader = reader.CsvTallyReader{}
+		tallyReader = reader.ProfilesCsvReader{}
 
 		_, tallies, proposals, grades, errReader := tallyReader.Read(&csvReader)
 		if errReader != nil {

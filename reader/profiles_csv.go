@@ -9,15 +9,15 @@ import (
 	"strings"
 )
 
-// CsvTallyReader reads a poll's tally in a CSV like so:
+// ProfilesCsvReader reads a poll's tally in a CSV like so:
 //     Nutriscore, G, F, E, D, C, B, A
 //          Pizza, 4, 2, 3, 4, 5, 4, 1
 //          Chips, 5, 3, 2, 4, 4, 3, 2
-type CsvTallyReader struct{}
+type ProfilesCsvReader struct{}
 
 // Read the input CSV and return as much data as we can.
 // Read does not fill the `judgments` because this data is absent from the profiles.
-func (r CsvTallyReader) Read(input *io.Reader) (
+func (r ProfilesCsvReader) Read(input *io.Reader) (
 	judgments [][]int,
 	tallies [][]float64,
 	proposals []string,
@@ -103,7 +103,8 @@ func (r CsvTallyReader) Read(input *io.Reader) (
 	return
 }
 
-func (r CsvTallyReader) detectShape(rows [][]string) (hasGradesNamesRow bool, hasProposalNamesColumn bool) {
+// detectShape gathers metadata about the CSV structure
+func (r ProfilesCsvReader) detectShape(rows [][]string) (hasGradesNamesRow bool, hasProposalNamesColumn bool) {
 	hasGradesNamesRow = false
 	hasProposalNamesColumn = false
 
@@ -130,7 +131,6 @@ func (r CsvTallyReader) detectShape(rows [][]string) (hasGradesNamesRow bool, ha
 				hasProposalNamesColumn = true
 			}
 		}
-
 	}
 
 	return
