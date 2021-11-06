@@ -13,6 +13,7 @@ import (
 //     Nutriscore, G, F, E, D, C, B, A
 //          Pizza, 4, 2, 3, 4, 5, 4, 1
 //          Chips, 5, 3, 2, 4, 4, 3, 2
+//          Pasta, 4, 4, 2, 4, 4, 3, 2
 type ProfilesCsvReader struct{}
 
 // Read the input CSV and return as much data as we can.
@@ -33,7 +34,7 @@ func (r ProfilesCsvReader) Read(input *io.Reader) (
 	inputReaderForMeta := strings.NewReader(allData)
 	inputReaderForData := strings.NewReader(allData)
 
-	// I.a Detect the delimiter between values in the input (default is comma `,`)
+	// I.a Detect the delimiter between values in the input
 	delimiterDetector := detector.New()
 	delimiters := delimiterDetector.DetectDelimiter(inputReaderForMeta, byte(csvQuote))
 	if 0 < len(delimiters) {
