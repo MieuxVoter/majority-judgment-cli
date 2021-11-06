@@ -92,6 +92,11 @@ The --width parameter only applies to the default format (text).
 		amountOfJudgesStr := cmd.Flags().Lookup("judges").Value.String()
 		chart := cmd.Flags().Lookup("chart").Value.String()
 		normalize := cmd.Flags().Lookup("normalize").Changed
+		colorize := !cmd.Flags().Lookup("no-color").Changed
+		_, hasNoColorEnv := os.LookupEnv("NO_COLOR") // https://no-color.org/
+		if hasNoColorEnv {
+			colorize = false
+		}
 
 		var outputFormatter formatter.Formatter
 		outputFormatter = &formatter.TextFormatter{}
@@ -246,7 +251,7 @@ The --width parameter only applies to the default format (text).
 			desiredWidth = 79
 		}
 		options := &formatter.Options{
-			Colorized: !cmd.Flags().Lookup("no-color").Changed,
+			Colorized: colorize,
 			Scale:     precisionScale,
 			Sorted:    cmd.Flags().Lookup("sort").Changed,
 			Width:     desiredWidth,
