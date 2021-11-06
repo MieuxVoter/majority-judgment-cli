@@ -3,6 +3,8 @@ package formatter
 import (
 	"fmt"
 	"github.com/mieuxvoter/majority-judgment-library-go/judgment"
+	"github.com/muesli/termenv"
+	"image/color"
 	"math"
 	"strings"
 )
@@ -24,6 +26,10 @@ func (t *TextOpinionFormatter) Format(
 	if expectedWidth <= 0 {
 		expectedWidth = defaultWidth
 	}
+
+	colorized := options.Colorized
+	palette := judgment.CreateDefaultPalette(len(proposals))
+	colorProfile := termenv.ColorProfile()
 
 	proposalsResults := result.Proposals
 	if options.Sorted {
@@ -100,6 +106,8 @@ func (t *TextOpinionFormatter) Format(
 			gradeIndex,
 			maximumAmountOfJudgmentsForGrade,
 			chartWidth,
+			colorized,
+			palette,
 		)
 
 		out += line + "\n"
@@ -111,11 +119,18 @@ func (t *TextOpinionFormatter) Format(
 		if maximumDefinitionLength < minimumDefinitionLength {
 			maximumDefinitionLength = minimumDefinitionLength
 		}
+
+		proposalChar := getCharForIndex(proposalResult.Index)
+		if colorized {
+			textColor := colorProfile.FromColor(palette[proposalResult.Index])
+			proposalChar = termenv.String(proposalChar).Background(textColor).Foreground(textColor).String()
+		}
+
 		legendDefinitions = append(
 			legendDefinitions,
 			fmt.Sprintf(
 				"%s=%s",
-				getCharForIndex(proposalResult.Index),
+				proposalChar,
 				truncateString(proposals[proposalResult.Index], maximumDefinitionLength, '…'),
 			),
 		)
@@ -132,11 +147,14 @@ func makeAsciiOpinionProfile(
 	gradeIndex int,
 	maximumValue uint64,
 	width int,
+	colorized bool,
+	palette color.Palette,
 ) (ascii string) {
 	if width < 3 {
 		width = 3
 	}
 
+	colorProfile := termenv.ColorProfile()
 	widthFloat := float64(width)
 	maximumValueFloat := float64(maximumValue)
 	cumul := 0.0
@@ -153,15 +171,20 @@ func makeAsciiOpinionProfile(
 				cumul = 0
 			}
 		}
-		ascii += strings.Repeat(
+		bricks := strings.Repeat(
 			proposalChar,
 			amountOfChars,
 		)
+		if colorized {
+			textColor := colorProfile.FromColor(palette[proposalIndex])
+			bricks = termenv.String(bricks).Foreground(textColor).Background(textColor).String()
+		}
+		ascii += bricks
 	}
 
-	for len(ascii) > width {
-		ascii = ascii[0 : len(ascii)-1]
-	}
+	//for len(ascii) > width {
+	//	ascii = ascii[0 : len(ascii)-1]
+	//}
 
 	return
 }
