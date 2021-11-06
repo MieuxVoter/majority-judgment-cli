@@ -101,10 +101,7 @@ func (t *TextFormatter) Format(
 		gradeChar := getCharForIndex(gradeIndex)
 		if colorized {
 			color := colorProfile.FromColor(palette[gradeIndex])
-			s := termenv.String(gradeChar)
-			s = s.Background(color)
-			s = s.Foreground(color)
-			gradeChar = s.String()
+			gradeChar = termenv.String(gradeChar).Background(color).Foreground(color).String()
 		}
 		legendDefinitions = append(
 			legendDefinitions,
