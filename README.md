@@ -31,24 +31,29 @@ You can run
 
 and get
 
-    #2   Pizza 000000000000011111111222233333333|333333334444444444444444455555555
-    #1   Chips 000000001111111111111333333333333|333344444444444445555555555555555
-    #3   Pasta 000000000000000001111111111111111|111122223333333333333333355555555
-    
-    Legend:  0=reject  1=poor  2=fair  3=good  4=very good  5=excellent
+![Merit profiles in ASCII art, with colors](example/screenshot_merit_color.png)
 
 
 You probably want to `--sort` the proposals by their rank as well:
 
-    #1   Chips 000000001111111111111333333333333|333344444444444445555555555555555
-    #2   Pizza 000000000000011111111222233333333|333333334444444444444444455555555
-    #3   Pasta 000000000000000001111111111111111|111122223333333333333333355555555
-    
-    Legend:  0=reject  1=poor  2=fair  3=good  4=very good  5=excellent
+    ./mj example.csv --sort
+
+![Merit profiles in ASCII art, with colors, and sorted](example/screenshot_merit_color_sorted.png)
 
 or use `-` to read from `stdin`:
 
     cat example.csv | mj - --sort
+
+
+You can also disable color with the flag `--no-color`:
+
+    ./mj example.csv --no-color
+
+    #2   Pizza 000000000000011111111222233333333|333333334444444444444444455555555
+    #1   Chips 000000001111111111111333333333333|333344444444444445555555555555555
+    #3   Pasta 000000000000000001111111111111111|111122223333333333333333355555555
+    
+       Legend: 0=reject  1=poor  2=fair  3=good  4=very good  5=excellent
 
 
 ### Balancing
