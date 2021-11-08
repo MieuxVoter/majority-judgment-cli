@@ -126,7 +126,7 @@ The --width parameter only applies to the default format (text).
 		} else if "svg" == format {
 			panic("todo: see issue https://github.com/MieuxVoter/majority-judgment-cli/issues/11")
 		} else {
-			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json, yaml\n", format)
+			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json, yaml, gnuplot\n", format)
 			os.Exit(errorConfiguring)
 		}
 
