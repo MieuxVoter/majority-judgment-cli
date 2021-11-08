@@ -187,7 +187,7 @@ The --width parameter only applies to the default format (text).
 					precisionScale *= 10.0
 				}
 			}
-			if precisionScale > maximumPrecisionScale {
+			if precisionScale >= maximumPrecisionScale {
 				break
 			}
 		}
