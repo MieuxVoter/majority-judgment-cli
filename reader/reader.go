@@ -29,7 +29,7 @@ func sanitizeInput(input string) string {
 	sanitized := input // inefficient, but makes code below more modular — TBD
 
 	// Remove duplicate spaces
-	sanitized = regexp.MustCompile(` +`).ReplaceAllString(sanitized, " ")
+	sanitized = regexp.MustCompile(`  +`).ReplaceAllString(sanitized, " ")
 
 	// …
 
