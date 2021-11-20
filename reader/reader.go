@@ -31,6 +31,9 @@ func sanitizeInput(input string) string {
 	// Remove duplicate spaces
 	sanitized = regexp.MustCompile(`  +`).ReplaceAllString(sanitized, " ")
 
+	// Remove Carriage Return (CRLF into LF)
+	sanitized = regexp.MustCompile(`\r\n`).ReplaceAllString(sanitized, "\n")
+
 	// …
 
 	return sanitized

@@ -63,6 +63,12 @@ var testData = []struct {
 		},
 	},
 	{
+		name: "CRLF, example12.ssv",
+		args: []string{
+			"example/example12.ssv",
+		},
+	},
+	{
 		name: "--sort usage, example.csv",
 		args: []string{
 			"example/example.csv",
