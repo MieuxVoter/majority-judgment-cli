@@ -12,7 +12,7 @@ import (
 // GnuplotMeritFormatter creates a script for gnuplot that displays the merit profiles
 type GnuplotMeritFormatter struct{}
 
-// Format the provided results
+// Format the provided results in the gnuplot script form
 func (t *GnuplotMeritFormatter) Format(
 	pollTally *judgment.PollTally,
 	result *judgment.PollResult,
@@ -24,16 +24,6 @@ func (t *GnuplotMeritFormatter) Format(
 	if options.Sorted {
 		proposalsResults = result.ProposalsSorted
 	}
-
-	//var proposalsNames []string
-	//if options.Sorted {
-	//	proposalsNames = make([]string, 0, 10)
-	//	for _, proposalResult := range proposalsResults {
-	//		proposalsNames = append(proposalsNames, proposals[proposalResult.Index])
-	//	}
-	//} else {
-	//	proposalsNames = proposals
-	//}
 
 	buffer := new(bytes.Buffer)
 	writer := csv.NewWriter(buffer)
@@ -75,18 +65,21 @@ func (t *GnuplotMeritFormatter) Format(
 
 	gnuplotScript := `# This is a script for gnuplot http://www.gnuplot.info/
 # You may pipe it into gnuplot directly like so:
-# ./mj example.csv --format gnuplot | gnuplot -p
+# ./mj example.csv --format gnuplot | gnuplot --persist
+# To use a different gnuplot terminal than x11, you can specify it:
+# ./mj example.csv --format gnuplot --terminal qt | gnuplot -p
+# To see your available gnuplot terminals, run:
+# echo "set terminal" | gnuplot
 $data <<EOD
 ` + strings.TrimSpace(buffer.String()) + `
 EOD
 set datafile separator ','
 
-set term wxt \
-    persist \
-    size 1000, ` + strconv.Itoa(plotHeight) + ` \
-    #position 300, 200 \
+set title 'Merit Profiles'
+
+set terminal ` + strings.TrimSpace(options.Terminal) + ` \
+    size 1024, ` + strconv.Itoa(plotHeight) + ` \
     background rgb '#f0f0f0' \
-    title 'Merit Profiles' \
     font ',12'
 
 set xrange [:]
@@ -114,10 +107,9 @@ set arrow \
 set format x '%.0f%%'
 set xtics out
 
-# set title 'Merit profile'
-# set bmargin at screen 0.2
+#set bmargin at screen 0.2
 
-# Or the gates of confusion will break loose
+# Mouse usage is quite confusing on some gnuplot terminals
 unset mouse
 
 #stats $data using 0
@@ -138,7 +130,6 @@ plot for [col=2: nb_grades + 1] \
     title columnhead(col) \
 	lw 5 \
     lt rgb colors[col-1]
-
 
 
 `

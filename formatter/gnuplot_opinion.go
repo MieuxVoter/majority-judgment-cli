@@ -70,31 +70,32 @@ func (t *GnuplotOpinionFormatter) Format(
 
 	writer.Flush()
 
-	plotWidth := 400 + len(grades)*90
+	plotWidth := 400 + 90*len(grades)
 
 	gnuplotScript := `# This is a script for gnuplot http://www.gnuplot.info/
 # You may pipe it into gnuplot directly like so:
-# ./mj example.csv --format gnuplot --chart opinion | gnuplot -p
+# ./mj example.csv --format gnuplot --chart opinion | gnuplot --persist
+# To use a different gnuplot terminal than x11, you can specify it:
+# ./mj example.csv --format gnuplot --terminal qt | gnuplot -p
+# To see your available gnuplot terminals, run:
+# echo "set terminal" | gnuplot
 
 $tally << EOD
 ` + strings.TrimSpace(buffer.String()) + `
 EOD
-set datafile separator ","
+set datafile separator ','
 
-set term wxt \
-    persist \
+set title 'Opinion Profile'
+
+set terminal ` + strings.TrimSpace(options.Terminal) + ` \
     size ` + strconv.Itoa(plotWidth) + `, 600 \
     background rgb '#f0f0f0' \
-    title 'Opinion Profile' \
     font ',14'
 
-#set title "Opinion Profile"
-#set key below height 200
 #set xlabel 'Grades'
 set ylabel 'Judges'
 
 set border 11
-
 
 set key samplen 2 spacing 0.85
 

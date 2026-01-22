@@ -8,6 +8,7 @@ type Options struct {
 	Colorized bool
 	Scale     float64 // so we can use integers internally, and display floats
 	Sorted    bool
+	Terminal  string // User-defined gnuplot terminal, only used by gnuplot formatters
 	Width     int
 }
 
