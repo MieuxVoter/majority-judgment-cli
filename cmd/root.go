@@ -76,9 +76,14 @@ You can get different formats as output:
 
 Gnuplots are meant to be piped as scripts to gnuplot http://www.gnuplot.info
 
-	mj example.csv --sort --format gnuplot | gnuplot
+	mj example.csv --sort --format gnuplot | gnuplot --persist
+
+You can also use gnuplot to create a SVG file:
+
+	mj example.csv --sort --format gnuplot --terminal svg | gnuplot > merits.svg
 
 The --width parameter only applies to the default format (text).
+The --terminal parameter only applies to the gnuplot format.
 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -88,6 +93,7 @@ The --width parameter only applies to the default format (text).
 			return
 		}
 		format := cmd.Flags().Lookup("format").Value.String()
+		terminal := cmd.Flags().Lookup("terminal").Value.String()
 		defaultTo := cmd.Flags().Lookup("default").Value.String()
 		amountOfJudgesStr := cmd.Flags().Lookup("judges").Value.String()
 		chart := cmd.Flags().Lookup("chart").Value.String()
@@ -124,7 +130,11 @@ The --width parameter only applies to the default format (text).
 		} else if "gnuplot-opinion" == format || "gnuplot_opinion" == format {
 			outputFormatter = &formatter.GnuplotOpinionFormatter{}
 		} else if "svg" == format {
-			panic("todo: see issue https://github.com/MieuxVoter/majority-judgment-cli/issues/11")
+			panic(
+				"Unsupported format." + "\n" +
+					"Try with   --format gnuplot --terminal svg   instead?" + "\n" +
+					"See issue https://github.com/MieuxVoter/majority-judgment-cli/issues/11",
+			)
 		} else {
 			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json, yaml, gnuplot\n", format)
 			os.Exit(errorConfiguring)
@@ -254,6 +264,7 @@ The --width parameter only applies to the default format (text).
 			Colorized: colorize,
 			Scale:     precisionScale,
 			Sorted:    cmd.Flags().Lookup("sort").Changed,
+			Terminal:  terminal,
 			Width:     desiredWidth,
 		}
 
@@ -281,19 +292,16 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	// Here we define our flags and configuration settings.
+	// Cobra supports persistent flags, which, if defined here, will be global for our application.
 
 	rootCmd.PersistentFlags().StringVar(&configurationFilePath, "config", "", "config file (default is $HOME/.mj.yaml)")
-	//rootCmd.PersistentFlags().StringVar(&configurationFilePath, "config", "", "config file (default is $HOME/.cobra.yaml)")
 	rootCmd.Flags().StringP("format", "f", "text", "desired format of the output")
+	rootCmd.Flags().StringP("terminal", "", "x11", "terminal for gnuplot (x11, qt, svg…)")
 	rootCmd.Flags().StringP("default", "d", "0", "default grade to use when unbalanced")
 	rootCmd.Flags().StringP("width", "w", "79", "desired width, in characters")
 	rootCmd.Flags().StringP("chart", "c", "merit", "one of merit, opinion")
 	rootCmd.Flags().Int64P("judges", "j", 0, "amount of judges participating (overrides our guess)")
-	//rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
-	//rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
 	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by their rank")
 	rootCmd.Flags().BoolP("normalize", "n", false, "normalize input to balance proposal participation")
 	rootCmd.Flags().Bool("no-color", false, "do not use colors in the text outputs")

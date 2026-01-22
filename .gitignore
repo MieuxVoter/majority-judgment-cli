@@ -1,8 +1,11 @@
 # Not 100% sure we should version this.
-go.sum
+/go.sum
+
+# Editor
+/.idea
 
 # Builds
-majority-judgment-cli
-majority-judgment-cli.exe
-mj
-mj.exe
+/majority-judgment-cli
+/majority-judgment-cli.exe
+/mj
+/mj.exe
