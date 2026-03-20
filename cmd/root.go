@@ -103,6 +103,8 @@ The --terminal parameter only applies to the gnuplot format.
 		if hasNoColorEnv {
 			colorize = false
 		}
+		invertGrades := cmd.Flags().Lookup("invert-input-grades").Changed
+		greenToRed := cmd.Flags().Lookup("green-to-red").Changed
 
 		var outputFormatter formatter.Formatter
 		outputFormatter = &formatter.TextFormatter{}
@@ -165,7 +167,7 @@ The --terminal parameter only applies to the gnuplot format.
 
 		tallyReader = reader.ProfilesCsvReader{}
 
-		_, tallies, proposals, grades, errReader := tallyReader.Read(&csvReader)
+		_, tallies, proposals, grades, errReader := tallyReader.Read(&csvReader, !invertGrades)
 		if errReader != nil {
 			fmt.Printf("Failed to read input: " + errReader.Error() + "\n")
 			os.Exit(errorReading)
@@ -261,11 +263,12 @@ The --terminal parameter only applies to the gnuplot format.
 			desiredWidth = 79
 		}
 		options := &formatter.Options{
-			Colorized: colorize,
-			Scale:     precisionScale,
-			Sorted:    cmd.Flags().Lookup("sort").Changed,
-			Terminal:  terminal,
-			Width:     desiredWidth,
+			Colorized:  colorize,
+			Scale:      precisionScale,
+			Sorted:     cmd.Flags().Lookup("sort").Changed,
+			Terminal:   terminal,
+			Width:      desiredWidth,
+			GreenToRed: greenToRed,
 		}
 
 		out, formatterErr := outputFormatter.Format(
@@ -305,6 +308,8 @@ func init() {
 	rootCmd.Flags().BoolP("sort", "s", false, "sort proposals by their rank")
 	rootCmd.Flags().BoolP("normalize", "n", false, "normalize input to balance proposal participation")
 	rootCmd.Flags().Bool("no-color", false, "do not use colors in the text outputs")
+	rootCmd.Flags().Bool("invert-input-grades", false, "if you provide your grades from best to worst")
+	rootCmd.Flags().Bool("green-to-red", false, "display grades from best (green) to worst (red)")
 	rootCmd.SetVersionTemplate("{{.Version}}\n" + version.BuildDate + "\n")
 }
 

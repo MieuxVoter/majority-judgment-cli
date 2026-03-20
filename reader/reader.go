@@ -15,6 +15,7 @@ type Reader interface {
 	// but you must return at least either `tallies` or `judgments`.
 	Read(
 		input *io.Reader,
+		worstGradeToBestGrade bool,
 	) (
 		judgments [][]int, // for each participant, the grade index per proposal, or -1
 		tallies [][]float64, // for each proposal, the tallies of each grade
