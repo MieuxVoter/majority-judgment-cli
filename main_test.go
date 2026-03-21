@@ -83,6 +83,14 @@ var testData = []struct {
 			"gnuplot",
 		},
 	},
+	{
+		name: "--invert-grades, example13.csv",
+		args: []string{
+			"example/example13.csv",
+			"--invert-input-grades",
+			"--sort",
+		},
+	},
 }
 
 func TestAll(t *testing.T) {
@@ -94,9 +102,12 @@ func TestAll(t *testing.T) {
 			main()
 
 			// How to do?
-			// Check return code against tt.code
-			// Check stdout against tt.stdout
-			// Check stderr against tt.stderr
+			// 1. Check return code against tt.code
+			// 2. Check stdout against tt.stdout
+			// 3. Check stderr against tt.stderr
+
+			// Idea: go for acceptance testing using BATS instead ?
+			// https://github.com/bats-core/bats-core.git
 		})
 	}
 }

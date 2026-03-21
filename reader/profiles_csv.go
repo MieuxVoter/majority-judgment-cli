@@ -10,15 +10,19 @@ import (
 )
 
 // ProfilesCsvReader reads a poll's tally in a CSV like so:
-//     Nutriscore, G, F, E, D, C, B, A
-//          Pizza, 4, 2, 3, 4, 5, 4, 1
-//          Chips, 5, 3, 2, 4, 4, 3, 2
-//          Pasta, 4, 4, 2, 4, 4, 3, 2
+//
+//	Nutriscore, G, F, E, D, C, B, A
+//	     Pizza, 4, 2, 3, 4, 5, 4, 1
+//	     Chips, 5, 3, 2, 4, 4, 3, 2
+//	     Pasta, 4, 4, 2, 4, 4, 3, 2
 type ProfilesCsvReader struct{}
 
 // Read the input CSV and return as much data as we can.
 // Read does not fill the `judgments` because this data is absent from the profiles.
-func (r ProfilesCsvReader) Read(input *io.Reader) (
+func (r ProfilesCsvReader) Read(
+	input *io.Reader,
+	worstGradeToBestGrade bool,
+) (
 	judgments [][]int,
 	tallies [][]float64,
 	proposals []string,
@@ -80,6 +84,12 @@ func (r ProfilesCsvReader) Read(input *io.Reader) (
 					return
 				}
 			}
+			if !worstGradeToBestGrade {
+				//slices.Reverse(grades)
+				for i, j := 0, len(grades)-1; i < j; i, j = i+1, j-1 {
+					grades[i], grades[j] = grades[j], grades[i]
+				}
+			}
 		}
 
 		if rowIndex > 0 || !hasGradesNamesRow {
@@ -96,6 +106,12 @@ func (r ProfilesCsvReader) Read(input *io.Reader) (
 			if nil != tallyErr {
 				err = errors.New("Failed to read input tally: " + tallyErr.Error())
 				return
+			}
+			if !worstGradeToBestGrade {
+				//slices.Reverse(proposalTallyOfFloats)
+				for i, j := 0, len(proposalTallyOfFloats)-1; i < j; i, j = i+1, j-1 {
+					proposalTallyOfFloats[i], proposalTallyOfFloats[j] = proposalTallyOfFloats[j], proposalTallyOfFloats[i]
+				}
 			}
 			tallies = append(tallies, proposalTallyOfFloats)
 		}

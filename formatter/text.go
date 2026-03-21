@@ -14,8 +14,6 @@ const minimumDefinitionLength = 7
 
 // TextFormatter is the default formatter.
 // It displays the proposals with their merit profiles and ranks.
-// It does not use color (yet).  ANSI colors are appalling.
-// Perhaps we can use xterm colors?
 type TextFormatter struct{}
 
 // Format the provided results
@@ -87,6 +85,7 @@ func (t *TextFormatter) Format(
 			pollTally.Proposals[proposalResult.Index],
 			chartWidth,
 			colorized,
+			options.GreenToRed,
 		)
 
 		out += line + "\n"
@@ -111,6 +110,11 @@ func (t *TextFormatter) Format(
 				truncateString(gradeName, maximumDefinitionLength, '…'),
 			),
 		)
+	}
+	if options.GreenToRed {
+		for i, j := 0, len(legendDefinitions)-1; i < j; i, j = i+1, j-1 {
+			legendDefinitions[i], legendDefinitions[j] = legendDefinitions[j], legendDefinitions[i]
+		}
 	}
 
 	out += "\n"
@@ -172,6 +176,7 @@ func makeAsciiMeritProfile(
 	tally *judgment.ProposalTally,
 	width int,
 	colorized bool,
+	greenToRed bool,
 ) (ascii string) {
 	if width < 3 {
 		width = 3
@@ -181,6 +186,9 @@ func makeAsciiMeritProfile(
 
 	for cursor := 0; cursor < width; cursor++ {
 		ratio := float64(cursor) / float64(width)
+		if greenToRed {
+			ratio = float64(width-cursor-1) / float64(width)
+		}
 		gradeIndex, _ := getGradeAtRatio(tally, ratio)
 		gradeChar := getCharForIndex(gradeIndex)
 		isMedian := (width)/2 == cursor
