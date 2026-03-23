@@ -8,7 +8,7 @@ go 1.17
 require (
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d
 	github.com/csimplestring/go-csv v0.0.0-20180328183906-5b8b3cd94f2c
-	github.com/mieuxvoter/majority-judgment-library-go v0.3.1
+	github.com/mieuxvoter/majority-judgment-library-go v0.3.3
 	github.com/muesli/termenv v0.9.0
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
