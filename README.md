@@ -5,10 +5,9 @@
 [![Build Status](https://img.shields.io/github/actions/workflow/status/MieuxVoter/majority-judgment-cli/go.yml?style=for-the-badge)](https://github.com/MieuxVoter/majority-judgment-cli/actions/workflows/go.yml)
 [![Code Quality](https://img.shields.io/codefactor/grade/github/MieuxVoter/majority-judgment-cli?style=for-the-badge)](https://www.codefactor.io/repository/github/mieuxvoter/majority-judgment-cli)
 [![A+](https://img.shields.io/badge/go%20report-A+-brightgreen.svg?style=for-the-badge)](https://goreportcard.com/report/github.com/mieuxvoter/majority-judgment-cli)
-![LoC](https://img.shields.io/tokei/lines/github/MieuxVoter/majority-judgment-cli?style=for-the-badge)
 [![Discord Chat](https://img.shields.io/discord/705322981102190593.svg?style=for-the-badge)](https://discord.gg/rAAQG9S)
 
-Resolve Majority Judgment polls and compute the rank of each proposal.
+Resolve Majority Judgment polls by computing the rank of each proposal.
 
 ## Download
 
