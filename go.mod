@@ -3,7 +3,7 @@ module github.com/MieuxVoter/majority-judgment-cli
 // I don't see any reason not to bump this from time to time as needed.
 // We're not a lib so we don't have to be as low as possible, right?
 // Also, 1.20 has the slices lib (slices.Reverse !), so…
-go 1.17
+go 1.18
 
 require (
 	// We use ANSI characters for color
