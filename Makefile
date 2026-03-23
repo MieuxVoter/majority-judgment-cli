@@ -15,7 +15,7 @@ LD_FLAGS_STRIP=-s -w
 depend:
 	go get
 	go get github.com/ahmetb/govvv
-	apt install upx
+	sudo apt install -y upx
 
 run:
 	@echo "(running from source code, at version $(VERSION))"
