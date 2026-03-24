@@ -29,20 +29,22 @@ clean:
 
 build: build-linux-amd64
 
+# WIP: requires Go 1.20+
+build-coverage:
+	go build -cover -o "$(BINARY_PATH)-coverage" "$(SOURCE)"
+
 build-linux-amd64: $(shell find . -name \*.go)
-	GOOS=linux GOARCH=amd64 go build \
-		-v \
+	@echo "Building $(BINARY_PATH):"
+	GOOS=linux GOARCH=amd64 go build -v \
 		-ldflags="$(govvv -flags -pkg $(go list ./version)) $(LD_FLAGS_STRIP)" \
-		-o "$(BINARY_PATH)" \
-		$(SOURCE)
+		-o "$(BINARY_PATH)" "$(SOURCE)"
 	@echo "Done building $(BINARY_PATH) at $(shell pwd):"
 	@ls -lahF "$(BINARY_PATH)"
 
 build-windows-amd64: $(shell find . -name \*.go)
-	GOOS=windows GOARCH=amd64 go build \
+	GOOS=windows GOARCH=amd64 go build -v \
 		-ldflags="$(govvv -flags -pkg $(go list ./version)) $(LD_FLAGS_STRIP)" \
-		-o "$(BINARY_PATH).exe" \
-		$(SOURCE)
+		-o "$(BINARY_PATH).exe" "$(SOURCE)"
 	@echo "Done building $(BINARY_PATH).exe at $(shell pwd):"
 	@ls -lahF "$(BINARY_PATH).exe"
 
@@ -50,10 +52,16 @@ release: clean build-linux-amd64 build-windows-amd64
 	upx --ultra-brute "$(BINARY_PATH)"
 	upx --ultra-brute "$(BINARY_PATH).exe"
 
-test: test-unit
+test: test-unit test-acceptance
 
 test-unit:
 	go test -v `go list ./...`
+
+test-acceptance: build test-acceptance-depend
+	test/bats/bin/bats test
+
+test-acceptance-depend:
+	@git submodule update --init --recursive
 
 install: install-release
 
