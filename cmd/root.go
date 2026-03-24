@@ -45,7 +45,7 @@ var rootCmd = &cobra.Command{
 	Use:     "mj FILE",
 	Version: version.GitSummary,
 	Short:   "Resolve and inspect Majority Judgment polls",
-	Long: `Resolve Majority Judgment polls from an input CSV.
+	Long: `Rank proposals of a Majority Judgment poll.
 
 Say you have the following tally in a CSV (or TSV) file named example.csv:
 
