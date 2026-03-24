@@ -11,8 +11,12 @@ Resolve Majority Judgment polls by computing the rank of each proposal.
 
 ## Download
 
-Hand-made builds for _Windows_ and _Linux/Mac_ are provided in the [Assets of each Release](https://github.com/MieuxVoter/majority-judgment-cli/releases).
+- [Download for Linux _(amd64)_](https://github.com/MieuxVoter/majority-judgment-cli/releases/download/latest/mj)
+- [Download for Windows _(amd64)_](https://github.com/MieuxVoter/majority-judgment-cli/releases/download/latest/mj.exe)
 
+These automated builds for _Windows_ and _Linux/Mac_ are provided in the [Assets of each Release](https://github.com/MieuxVoter/majority-judgment-cli/releases).
+
+> [!TIP]
 > Remember to enable the execution bit: `chmod u+x ./mj`
 
 ## Usage
@@ -125,9 +129,9 @@ Then go into this project directory and run:
     ./mj example/example.csv --sort
 
 
-### Build distributables
+### Build Distributables
 
-We have a convenience script `build.sh` that will handle version embedding from git,
+We have a convenient _make_ recipe `make build` that will handle version embedding from git,
 using the clever `govvv`.
 
 But basically, it's:
@@ -140,7 +144,7 @@ Yields a `mj` binary of about `5 Mio`.
 
 You can run `upx` on the binary to reduce its size:
 
-    upx mj
+    upx --ultra-brute mj
 
 
 #### For Windows
@@ -152,4 +156,6 @@ Sometimes, Go builds for Windows are [falsely detected](https://golang.org/doc/f
 
 ## Run tests
 
-    go test -v
+We have some smoke unit tests, and a more complete acceptance testing suite using bats.
+
+    make test
