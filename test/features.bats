@@ -12,11 +12,15 @@
   assert_output --partial 'Rank proposals of a Majority Judgment poll.'
 }
 
-@test "Running without parameters shows the help" {
-  run "${mj}"
+@test "Run with an input CSV (example.csv)" {
+  run "${mj}" example/example.csv
   assert_success
-  assert_output --partial 'Rank proposals of a Majority Judgment poll.'
+  assert_output --partial '#2   Pizza'
+  assert_output --partial '#1   Chips'
+  assert_output --partial '#3   Pasta'
 }
+
+# WIP: write more tests !
 
 # ----------------------------------------------------------------------------
 
