@@ -29,19 +29,12 @@ jobs:
       - name: Generate the artifacts
         run: make release
 
-#      - name: Grant execution permission
-#        run: chmod +x ./mj
+      # Note: The release artifact might not have this bit set, whatever we do here.
+      - name: Grant execution permission
+        run: chmod +x ./mj
 
       - name: Test Release
         run: ./mj example/example.csv --sort
-
-      # Archived ; legacy
-#      - name: Upload the artifacts
-#        uses: skx/github-action-publish-binaries@master
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          args: 'mj*'
 
       # Upload the binaries to the Releases if there is a git tag.
       # Docs: https://github.com/softprops/action-gh-release
