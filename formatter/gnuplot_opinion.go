@@ -38,6 +38,7 @@ func (t *GnuplotOpinionFormatter) Format(
 
 	buffer := new(bytes.Buffer)
 	writer := csv.NewWriter(buffer)
+	defer writer.Flush()
 
 	if err := writer.Error(); err != nil {
 		log.Fatal(err)
@@ -67,8 +68,6 @@ func (t *GnuplotOpinionFormatter) Format(
 			log.Fatal(writeErr)
 		}
 	}
-
-	writer.Flush()
 
 	plotWidth := 400 + 90*len(grades)
 
