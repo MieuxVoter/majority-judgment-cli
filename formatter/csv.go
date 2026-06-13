@@ -13,7 +13,7 @@ type CsvFormatter struct{}
 
 // Format the provided results
 func (t *CsvFormatter) Format(
-	pollTally *judgment.PollTally,
+	_ *judgment.PollTally,
 	result *judgment.PollResult,
 	proposals []string,
 	grades []string,
