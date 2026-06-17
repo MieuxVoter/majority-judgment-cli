@@ -160,7 +160,7 @@ The --terminal parameter only applies to the gnuplot format.
 
 		_, tallies, proposals, grades, errReader := tallyReader.Read(&csvReader, !invertGrades)
 		if errReader != nil {
-			fmt.Printf("Failed to read input: " + errReader.Error() + "\n")
+			fmt.Printf("Failed to read input: %s\n", errReader.Error())
 			os.Exit(errorReading)
 		}
 
