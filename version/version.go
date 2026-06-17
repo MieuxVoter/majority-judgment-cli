@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 package version
 
 // These properties are filled through -ldflags upon building using govvv

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * This is a standard Cobra CLI app.
  * We don't really use subcommands for now, only the Root one.
