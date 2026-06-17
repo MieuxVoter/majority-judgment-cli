@@ -32,10 +32,11 @@ func (t *SvgMeritFormatter) Format(
 		svgProposals[i] = svgProposal
 	}
 
-	svg, err := merit.RenderLinearProfileSVG(
-		svgProposals,
-		merit.WithBgColor(color.NRGBA{R: 13, G: 13, B: 13, A: 255}),
-	)
+	renderOptions := make([]merit.RenderOptions, 0)
+	renderOptions = append(renderOptions, merit.WithBgColor(color.NRGBA{R: 13, G: 13, B: 13, A: 255}))
+	if options.GreenToRed {
+		renderOptions = append(renderOptions, merit.WithBestGradeOnLeft(true))
+	}
 
-	return svg, err
+	return merit.RenderLinearProfileSVG(svgProposals, renderOptions...)
 }
