@@ -13,7 +13,7 @@ type CsvFormatter struct{}
 
 // Format the provided results
 func (t *CsvFormatter) Format(
-	pollTally *judgment.PollTally,
+	_ *judgment.PollTally,
 	result *judgment.PollResult,
 	proposals []string,
 	grades []string,
@@ -26,6 +26,7 @@ func (t *CsvFormatter) Format(
 
 	buffer := new(bytes.Buffer)
 	writer := csv.NewWriter(buffer)
+	defer writer.Flush()
 
 	if err := writer.Error(); err != nil {
 		log.Fatal(err)
@@ -57,8 +58,6 @@ func (t *CsvFormatter) Format(
 		}
 
 	}
-
-	writer.Flush() // I've also seen "defer" prefixed here.  Gotta RTFM
 
 	return buffer.String(), nil
 }

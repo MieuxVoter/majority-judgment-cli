@@ -132,11 +132,15 @@ The --terminal parameter only applies to the gnuplot format.
 		} else if "gnuplot-opinion" == format || "gnuplot_opinion" == format {
 			outputFormatter = &formatter.GnuplotOpinionFormatter{}
 		} else if "svg" == format {
-			panic(
-				"Unsupported format." + "\n" +
-					"Try with   --format gnuplot --terminal svg   instead?" + "\n" +
-					"See issue https://github.com/MieuxVoter/majority-judgment-cli/issues/11",
-			)
+			if "merit" == chart {
+				outputFormatter = &formatter.SvgMeritFormatter{}
+			} else {
+				panic(
+					"The svg format is only supported for merit profiles." + "\n" +
+						"Try with   --format gnuplot --terminal svg   instead?" + "\n" +
+						"See issue https://github.com/MieuxVoter/majority-judgment-cli/issues/11",
+				)
+			}
 		} else {
 			fmt.Printf("Format `%s` is not supported.  Supported formats: text, csv, json, yaml, gnuplot\n", format)
 			os.Exit(errorConfiguring)

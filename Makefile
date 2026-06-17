@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := build
 
-#.PHONY: build test
+.PHONY: depend run clean build test release
 
 VERSION=$(shell git describe --tags --always)
 

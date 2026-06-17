@@ -27,6 +27,7 @@ func (t *GnuplotMeritFormatter) Format(
 
 	buffer := new(bytes.Buffer)
 	writer := csv.NewWriter(buffer)
+	defer writer.Flush()
 
 	if err := writer.Error(); err != nil {
 		log.Fatal(err)
@@ -57,7 +58,6 @@ func (t *GnuplotMeritFormatter) Format(
 			log.Fatal(writeErr)
 		}
 	}
-	writer.Flush()
 
 	plotHeight := 350 + 24*len(proposals)
 
