@@ -29,7 +29,7 @@ const errorFormatting = 5
 
 var rootCmd = &cobra.Command{
 	Use:     "mj FILE",
-	Version: version.GitSummary,
+	Version: version.GetVersion(),
 	Short:   "Resolve and inspect Majority Judgment polls",
 	Long: `Resolve Majority Judgment polls from an input CSV.
 
