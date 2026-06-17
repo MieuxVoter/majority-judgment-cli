@@ -10,6 +10,7 @@ import (
 	"github.com/MieuxVoter/majority-judgment-cli/version"
 	"github.com/spf13/cobra"
 	"io"
+	"slices"
 	"strings"
 
 	"os"
@@ -221,7 +222,7 @@ The --terminal parameter only applies to the gnuplot format.
 		}
 
 		var balancerErr error
-		defaultGradeIndex := indexOf(defaultTo, grades)
+		defaultGradeIndex := slices.Index(grades, defaultTo)
 		if -1 == defaultGradeIndex {
 			if "majority" == defaultTo || "median" == defaultTo {
 				balancerErr = poll.BalanceWithMedianDefault()
@@ -325,15 +326,4 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
-}
-
-// indexOf searches the data for the element, and returns its index, or -1
-// Go's typing is pretty strict, hence the need for a grunt function like this.
-func indexOf(element string, data []string) int {
-	for k, v := range data {
-		if element == v {
-			return k
-		}
-	}
-	return -1
 }
