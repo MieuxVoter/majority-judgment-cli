@@ -7,13 +7,16 @@
 [![A+](https://img.shields.io/badge/go%20report-A+-brightgreen.svg?style=for-the-badge)](https://goreportcard.com/report/github.com/mieuxvoter/majority-judgment-cli)
 [![Discord Chat](https://img.shields.io/discord/705322981102190593.svg?style=for-the-badge)](https://discord.gg/k9YRuZPSZs)
 
-Resolve Majority Judgment polls by computing the rank of each proposal.
+Rank proposals according to Majority Judgment, using a command-line interface.
+
 
 ## Download
 
-Hand-made builds for _Windows_ and _Linux/Mac_ are provided in the [Assets of each Release](https://github.com/MieuxVoter/majority-judgment-cli/releases).
+Automated builds for _Windows_ and _Linux/Mac_ are provided in the [Assets of each Release](https://github.com/MieuxVoter/majority-judgment-cli/releases).
 
-> Remember to enable the execution bit: `chmod u+x ./mj`
+> [!TIP]
+> You might need to enable the execution bit: `chmod u+x ./mj`
+
 
 ## Usage
 
@@ -41,7 +44,7 @@ You probably want to `--sort` the proposals by their rank as well:
 
 or use `-` to read from `stdin`:
 
-    cat example.csv | mj - --sort
+    cat example.csv | ./mj - --sort
 
 
 You can also disable color with the flag `--no-color`:
@@ -61,11 +64,11 @@ Majority Judgment, to stay fair, requires tallies to be balanced ; **all proposa
 
 If your tally is not balanced, you may use a _default judgment strategy_:
 
-    mj example.csv --default 0
-    mj example.csv --default excellent
-    mj example.csv --default "très bien" --judges 42
-    mj example.csv --default majority
-    mj example.csv --normalize
+    ./mj example.csv --default 0
+    ./mj example.csv --default excellent
+    ./mj example.csv --default "très bien" --judges 42
+    ./mj example.csv --default majority
+    ./mj example.csv --normalize
 
 The default balancing strategy is to replace missing votes with the "worst", most conservative vote, that is `--default 0`.
 
@@ -93,15 +96,13 @@ You can specify the kind of chart you want:
 Available charts:
 - [x] `merit` (default)
 - [x] `opinion`
-- [ ] …
-- [ ] a LOT more would be possible with ballot data per participant
 
 
 ## Install
 
-Copy the binary somewhere in your `PATH`.
+Copy the binary somewhere in your `PATH`, for example `/usr/local/bin/`.
 
-Or don't, and use it from anywhere.
+Or don't, and use it from anywhere.  _You do you._
 
 
 ## Build
@@ -120,15 +121,17 @@ Then go into this project directory and run:
     go get
     go run .
     go run . example/example.csv --sort
-    go build -o mj
+    make build
     ./mj
     ./mj example/example.csv --sort
 
 
 ### Build distributables
 
-We have a convenience script `build.sh` that will handle version embedding from git,
+We have a convenience Makefile that will handle version embedding from git,
 using the clever `govvv`.
+
+    make release
 
 But basically, it's:
 
@@ -140,7 +143,7 @@ Yields a `mj` binary of about `5 Mio`.
 
 You can run `upx` on the binary to reduce its size:
 
-    upx mj
+    upx --ultra-brute mj
 
 
 #### For Windows
