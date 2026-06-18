@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 package formatter
 
 import "github.com/mieuxvoter/majority-judgment-library-go/judgment"

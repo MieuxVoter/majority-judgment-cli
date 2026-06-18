@@ -2,8 +2,7 @@ module github.com/MieuxVoter/majority-judgment-cli
 
 // I don't see any reason not to bump this from time to time as needed.
 // We're not a lib so we don't have to be as low as possible, right?
-// Also, 1.20 has the slices lib (slices.Reverse !), so…
-go 1.18
+go 1.25
 
 require (
 	// We use ANSI characters for color
@@ -13,7 +12,7 @@ require (
 	// The amazing Majority Judgment lib made by the goated devs of MieuxVoter
 	github.com/mieuxvoter/majority-judgment-library-go v0.3.3
 	// The beautiful merit profile lib made by the same goats
-	github.com/mieuxvoter/merit-profile-library-go v1.1.0
+	github.com/mieuxvoter/merit-profile-library-go v1.2.0
 	// We use it to get the color profiles of the user's terminal
 	github.com/muesli/termenv v0.16.0
 	// Cobra & Viper are the CLI app framework we use

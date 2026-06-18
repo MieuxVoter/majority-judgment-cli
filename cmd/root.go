@@ -1,18 +1,4 @@
-/*
-Copyright © 2021 Unescoop
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+// SPDX-License-Identifier: Apache-2.0
 
 package cmd
 
@@ -24,6 +10,7 @@ import (
 	"github.com/MieuxVoter/majority-judgment-cli/version"
 	"github.com/spf13/cobra"
 	"io"
+	"slices"
 	"strings"
 
 	"os"
@@ -43,7 +30,7 @@ const errorFormatting = 5
 
 var rootCmd = &cobra.Command{
 	Use:     "mj FILE",
-	Version: version.GitSummary,
+	Version: version.GetVersion(),
 	Short:   "Resolve and inspect Majority Judgment polls",
 	Long: `Resolve Majority Judgment polls from an input CSV.
 
@@ -173,7 +160,7 @@ The --terminal parameter only applies to the gnuplot format.
 
 		_, tallies, proposals, grades, errReader := tallyReader.Read(&csvReader, !invertGrades)
 		if errReader != nil {
-			fmt.Printf("Failed to read input: " + errReader.Error() + "\n")
+			fmt.Println("Failed to read input:", errReader)
 			os.Exit(errorReading)
 		}
 
@@ -235,7 +222,7 @@ The --terminal parameter only applies to the gnuplot format.
 		}
 
 		var balancerErr error
-		defaultGradeIndex := indexOf(defaultTo, grades)
+		defaultGradeIndex := slices.Index(grades, defaultTo)
 		if -1 == defaultGradeIndex {
 			if "majority" == defaultTo || "median" == defaultTo {
 				balancerErr = poll.BalanceWithMedianDefault()
@@ -339,15 +326,4 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		_, _ = fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
-}
-
-// indexOf searches the data for the element, and returns its index, or -1
-// Go's typing is pretty strict, hence the need for a grunt function like this.
-func indexOf(element string, data []string) int {
-	for k, v := range data {
-		if element == v {
-			return k
-		}
-	}
-	return -1
 }
